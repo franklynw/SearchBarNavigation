@@ -13,7 +13,7 @@ public struct BarButtons {
     let trailing: [MenuItem]
     let color: Color?
     
-    init(leading: [MenuItem] = [], trailing: [MenuItem] = [], color: Color? = nil) {
+    public init(leading: [MenuItem] = [], trailing: [MenuItem] = [], color: Color? = nil) {
         self.leading = leading
         self.trailing = trailing
         self.color = color
