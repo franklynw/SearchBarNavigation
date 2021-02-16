@@ -168,7 +168,7 @@ SearchBarNavigation(viewModel)
 
 ### Bar buttons
 
-You can set the bar buttons, either with normal buttons or with menu buttons (they show a menu when you tap them). This is controlled by the type of MenuItem you provide
+You can set the bar buttons, either with normal buttons or with menu buttons (they show a menu when you tap them). This is controlled by the type of ButtonConfig you provide
 
 ```swift
 SearchBarNavigation(viewModel)
@@ -259,6 +259,7 @@ SearchBarNavigation(viewModel)
 
 ## Dependencies
 
+Requires ButtonConfig, which is linked. GitHub page is [here](https://github.com/franklynw/ButtonConfig)
 Requires FWCommonProtocols, which is linked. GitHub page is [here](https://github.com/franklynw/FWCommonProtocols)
 
 

@@ -6,14 +6,15 @@
 //
 
 import SwiftUI
+import ButtonConfig
 
 
 public struct BarButtons {
-    let leading: [MenuItem]
-    let trailing: [MenuItem]
+    let leading: [ButtonConfig]
+    let trailing: [ButtonConfig]
     let color: Color?
     
-    public init(leading: [MenuItem] = [], trailing: [MenuItem] = [], color: Color? = nil) {
+    public init(leading: [ButtonConfig] = [], trailing: [ButtonConfig] = [], color: Color? = nil) {
         self.leading = leading
         self.trailing = trailing
         self.color = color

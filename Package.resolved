@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "ButtonConfig",
+        "repositoryURL": "https://github.com/franklynw/ButtonConfig.git",
+        "state": {
+          "branch": null,
+          "revision": "e40f9b96eb8b8aee49c646a1a83961d1f3dd677d",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "FWCommonProtocols",
         "repositoryURL": "https://github.com/franklynw/FWCommonProtocols.git",
         "state": {
