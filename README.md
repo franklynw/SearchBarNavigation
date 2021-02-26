@@ -78,7 +78,7 @@ struct MainView: View {
     var body: some View {
         
         SearchBarNavigation(viewModel) {
-            // content here
+            // page content here
         }
         .navigationBarTitle(.withImage(text: "Places to go", textColor: Color(.myCoolDarkBlue), image: UIImage(named: "Map")!))
         .placeHolder("Search for somewhere")

@@ -14,7 +14,7 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
     internal let viewModel: T
     internal let content: () -> Content
     
-    internal var title: Title?
+    internal var style: Style?
     internal var prefersLargeTitles = true
     internal var hasTranslucentBackground = false
     internal var placeholder: String?
@@ -28,18 +28,16 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
     internal var cancelButtonColor: Color?
     internal var maxRecents: Int = 3
     internal var maxResults: Int = .max
+    internal var itemSelected: ((String) -> ())?
     
-    /// Configure the navigation bar's title
-    public enum Title {
-        
-        /// Shows as a standard title with .label colour
-        case standard(String)
+    /// Configure the navigation bar's style
+    public enum Style {
         
         /// Allows the title and background to be coloured
-        case colored(text: String, textColor: Color, backgroundColor: Color)
+        case colored(textColor: Color, backgroundColor: Color)
         
         /// Allows the title to be coloured, and a background image set
-        case withImage(text: String, textColor: Color, image: UIImage)
+        case withImage(textColor: Color, image: UIImage)
     }
     
     
@@ -53,7 +51,7 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
         let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
-        setupTitle(for: navigationController)
+        setupStyle(for: navigationController)
         
         context.coordinator.searchController.searchBar.delegate = context.coordinator
         
@@ -73,26 +71,26 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
 // MARK: - Private
 extension SearchBarNavigation {
     
-    private func setupTitle(for navigationController: UINavigationController) {
+    private func setupStyle(for navigationController: UINavigationController) {
         
         let navBarAppearance = UINavigationBarAppearance()
         
-        switch title {
-        case .colored(_, let titleColor, let backgroundColor):
+        switch style {
+        case .colored(let titleColor, let backgroundColor):
             
             navBarAppearance.titleTextAttributes = [.foregroundColor: titleColor.uiColor]
             navBarAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor.uiColor]
             navBarAppearance.backgroundColor = backgroundColor.uiColor
             navigationController.navigationBar.backgroundColor = backgroundColor.uiColor // this is needed as well as the appearance to work when it has a transparent background
         
-        case .withImage(_, let titleColor, let image):
+        case .withImage(let titleColor, let image):
             
             navBarAppearance.titleTextAttributes = [.foregroundColor: titleColor.uiColor]
             navBarAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor.uiColor]
             
             setBackgroundImage(image, for: navigationController.navigationBar)
             
-        case .standard, .none:
+        case .none:
             break
         }
         

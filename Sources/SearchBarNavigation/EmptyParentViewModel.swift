@@ -1,0 +1,17 @@
+//
+//  EmptyParentViewModel.swift
+//  
+//
+//  Created by Franklyn Weber on 24/02/2021.
+//
+
+import SwiftUI
+
+
+public class EmptyParentViewModel: SearchBarShowing {
+    
+    public typealias SearchListItemType = Text
+    public typealias SearchListItemDetails = [String]
+    
+    public var searchResults: [SearchListItemType.Content] = []
+}

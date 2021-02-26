@@ -10,11 +10,11 @@ import ButtonConfig
 
 
 public struct BarButtons {
-    let leading: [ButtonConfig]
-    let trailing: [ButtonConfig]
+    let leading: [ImageButtonConfig]
+    let trailing: [ImageButtonConfig]
     let color: Color?
     
-    public init(leading: [ButtonConfig] = [], trailing: [ButtonConfig] = [], color: Color? = nil) {
+    public init(leading: [ImageButtonConfig] = [], trailing: [ImageButtonConfig] = [], color: Color? = nil) {
         self.leading = leading
         self.trailing = trailing
         self.color = color

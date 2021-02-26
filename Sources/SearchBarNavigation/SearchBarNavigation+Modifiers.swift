@@ -10,19 +10,11 @@ import SwiftUI
 
 extension SearchBarNavigation {
     
-    /// Sets the navigation bar title
-    /// - Parameter title: a Title case
-    public func navigationBarTitle(_ title: Title) -> Self {
+    /// Sets the navigation bar style
+    /// - Parameter style: a Style case
+    public func navigationBarStyle(_ style: Style) -> Self {
         var copy = self
-        copy.title = title
-        return copy
-    }
-    
-    /// Sets the navigation bar title
-    /// - Parameter title: a String
-    public func navigationBarTitle(_ title: String) -> Self {
-        var copy = self
-        copy.title = .standard(title)
+        copy.style = style
         return copy
     }
     
@@ -125,6 +117,14 @@ extension SearchBarNavigation {
     public func maxResults(_ maxResults: Int) -> Self {
         var copy = self
         copy.maxResults = maxResults
+        return copy
+    }
+    
+    /// Closure which can be invoked by a search item
+    /// - Parameter itemSelected: the closure which will be invoked
+    public func itemSelected(_ itemSelected: @escaping (String) -> ()) -> Self {
+        var copy = self
+        copy.itemSelected = itemSelected
         return copy
     }
 }

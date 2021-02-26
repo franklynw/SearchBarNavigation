@@ -32,6 +32,7 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
         searchResultsView.resultsBackgroundColor = parent.resultsBackgroundColor
         searchResultsView.maxRecents = parent.maxRecents
         searchResultsView.maxResults = parent.maxResults
+        searchResultsView.itemSelected = parent.itemSelected
         
         searchResultsView.finished = {
             searchResultsController?.dismiss(animated: true, completion: nil)
@@ -48,13 +49,6 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
         self.searchController = searchController
         
         rootViewController = UIHostingController(rootView: parent.content())
-        
-        switch parent.title {
-        case .standard(let text), .colored(let text, _, _), .withImage(let text, _, _):
-            rootViewController.title = text
-        case .none:
-            break
-        }
         
         super.init()
         
@@ -92,11 +86,15 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        parent.viewModel.selectedSearchTerm = parent.viewModel.searchTerm.wrappedValue
+        guard let text = searchBar.text else {
+            return
+        }
+        parent.viewModel.search(using: text)
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         parent.viewModel.searchTerm.wrappedValue = ""
+        parent.viewModel.searchCancelled()
     }
     
     fileprivate func clearSearchBar() {
