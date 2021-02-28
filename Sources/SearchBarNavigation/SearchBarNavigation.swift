@@ -18,6 +18,7 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
     internal var prefersLargeTitles = true
     internal var hasTranslucentBackground = false
     internal var placeholder: String?
+    internal var searchScopeTitles: [String] = []
     internal var barButtons: BarButtons?
     internal var recentsSectionTitle: String?
     internal var resultsSectionTitle: String?

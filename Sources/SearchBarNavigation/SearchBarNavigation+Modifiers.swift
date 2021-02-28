@@ -40,6 +40,14 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// Set the search scope buttons
+    /// - Parameter searchScopeTitles: the titles to use for the search scope buttons
+    public func searchScopeTitles(_ searchScopeTitles: [String]) -> Self {
+        var copy = self
+        copy.searchScopeTitles = searchScopeTitles
+        return copy
+    }
+    
     /// Buttons for the navigation bar
     /// - Parameter barButtons: a BarButtons instance
     public func barButtons(_ barButtons: BarButtons) -> Self {

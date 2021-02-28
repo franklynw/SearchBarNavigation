@@ -57,6 +57,7 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
         searchController.obscuresBackgroundDuringPresentation = true
         
         searchController.searchBar.placeholder = parent.placeholder
+        searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
         
         if let barButtons = parent.barButtons {
             
@@ -83,6 +84,10 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
     
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         parent.viewModel.searchTerm.wrappedValue = searchText
+    }
+    
+    public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        parent.viewModel.searchScope = selectedScope
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

@@ -16,6 +16,9 @@ public protocol SearchBarShowing: ObservableObject {
     /// A bound String for the viewModel to use to search - optional - if set, the viewModel can fire off search requests for every keystroke
     var searchTerm: Binding<String> { get }
     
+    /// The search scope selected by the user
+    var searchScope: Int { get set }
+    
     /// The results obtained by the viewModel - should be @Published
     var searchResults: [SearchListItemType.Content] { get }
     
@@ -36,6 +39,11 @@ public extension SearchBarShowing {
     
     var searchTerm: Binding<String> {
         Binding<String>(get: { "" }, set: { _ in })
+    }
+    
+    var searchScope: Int {
+        set {}
+        get { 0 }
     }
     
     var recentSearchSelections: [SearchListItemType.Content] {
