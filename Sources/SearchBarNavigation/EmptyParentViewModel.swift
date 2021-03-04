@@ -13,5 +13,5 @@ public class EmptyParentViewModel: SearchBarShowing {
     public typealias SearchListItemType = Text
     public typealias SearchListItemDetails = [String]
     
-    public var searchResults: [SearchListItemType.Content] = []
+    public var searchResults: [SearchListItemType.Content]? = nil
 }

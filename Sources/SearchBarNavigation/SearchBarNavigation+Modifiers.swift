@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ButtonConfig
 
 
 extension SearchBarNavigation {
@@ -56,11 +57,19 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// Sets the title of the "Recents" section of the results - if not used, will default to "Recents"
-    /// - Parameter recentsSectionTitle: a String
-    public func recentsSectionTitle(_ recentsSectionTitle: String) -> Self {
+    /// Button for the left of the search text field
+    /// - Parameter searchFieldButton: an ImageButtonConfig instance
+    public func searchFieldButton(_ searchFieldButton: ImageButtonConfig) -> Self {
         var copy = self
-        copy.recentsSectionTitle = recentsSectionTitle
+        copy.searchFieldButton = searchFieldButton
+        return copy
+    }
+    
+    /// Sets the title of the Other section of the results - if not used, will default to "Recents"
+    /// - Parameter otherResultsSectionTitle: a String
+    public func otherResultsSectionTitle(_ otherResultsSectionTitle: String) -> Self {
+        var copy = self
+        copy.otherResultsSectionTitle = otherResultsSectionTitle
         return copy
     }
     
@@ -72,19 +81,19 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// The colour to use for the text of the recent items - defaults to Color(.label) if unused
+    /// The colour to use for the text of the other results items - defaults to Color(.label) if unused
     /// - Parameter recentsTextColor: a Color
-    public func recentsTextColor(_ recentsTextColor: Color) -> Self {
+    public func otherResultsTextColor(_ otherResultsTextColor: Color) -> Self {
         var copy = self
-        copy.recentsTextColor = recentsTextColor
+        copy.otherResultsTextColor = otherResultsTextColor
         return copy
     }
     
-    /// The colour to use for the background of the recents area of the results list - defaults to Color(.systemBackground) if unused
+    /// The colour to use for the background of the other results area of the results list - defaults to Color(.systemBackground) if unused
     /// - Parameter recentsBackgroundColor: a Color
-    public func recentsBackgroundColor(_ recentsBackgroundColor: Color) -> Self {
+    public func otherResultsBackgroundColor(_ otherResultsBackgroundColor: Color) -> Self {
         var copy = self
-        copy.recentsBackgroundColor = recentsBackgroundColor
+        copy.otherResultsBackgroundColor = otherResultsBackgroundColor
         return copy
     }
     
@@ -112,11 +121,11 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// The maximum number of rows to show in the recents section - defaults to 3 if unused
-    /// - Parameter maxRecents: an Int value
-    public func maxRecents(_ maxRecents: Int) -> Self {
+    /// The maximum number of rows to show in the other section - defaults to 3 if unused
+    /// - Parameter maxOtherResults: an Int value
+    public func maxOtherResults(_ maxOtherResults: Int) -> Self {
         var copy = self
-        copy.maxRecents = maxRecents
+        copy.maxOtherResults = maxOtherResults
         return copy
     }
     

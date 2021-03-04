@@ -19,11 +19,14 @@ public protocol SearchBarShowing: ObservableObject {
     /// The search scope selected by the user
     var searchScope: Int { get set }
     
-    /// The results obtained by the viewModel - should be @Published
-    var searchResults: [SearchListItemType.Content] { get }
+    /// Should be set to true when the search is being carried out
+    var isSearching: Bool { get }
     
-    /// Recent results from the viewModel - optional, should be @Published
-    var recentSearchSelections: [SearchListItemType.Content] { get }
+    /// The results obtained by the viewModel - should be @Published
+    var searchResults: [SearchListItemType.Content]? { get }
+    
+    /// Other results from the viewModel, eg, Recents - optional, should be @Published
+    var otherResults: [SearchListItemType.Content]? { get }
     
     /// Called when the user selects from the list of results - optional
     func searchItemWasSelected(_ item: SearchListItemType.Content)
@@ -46,8 +49,12 @@ public extension SearchBarShowing {
         get { 0 }
     }
     
-    var recentSearchSelections: [SearchListItemType.Content] {
-        return []
+    var isSearching: Bool {
+        return false
+    }
+    
+    var otherResults: [SearchListItemType.Content]? {
+        return nil
     }
     
     func searchItemWasSelected(_ item: SearchListItemType.Content) {

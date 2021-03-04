@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FWCommonProtocols
+import ButtonConfig
 
 
 public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewControllerRepresentable {
@@ -20,14 +21,15 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
     internal var placeholder: String?
     internal var searchScopeTitles: [String] = []
     internal var barButtons: BarButtons?
-    internal var recentsSectionTitle: String?
+    internal var searchFieldButton: ImageButtonConfig?
+    internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
-    internal var recentsTextColor: Color?
-    internal var recentsBackgroundColor: Color?
     internal var resultsTextColor: Color?
     internal var resultsBackgroundColor: Color?
+    internal var otherResultsTextColor: Color?
+    internal var otherResultsBackgroundColor: Color?
     internal var cancelButtonColor: Color?
-    internal var maxRecents: Int = 3
+    internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
     

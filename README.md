@@ -30,7 +30,7 @@ class MainViewModel: SearchBarShowing {
     private var subscriptions = Set<AnyCancellable>()
     
     @Published var searchResults: [SearchItemInfo] = []
-    @Published var recentSearchSelections: [SearchItemInfo] = []
+    @Published var otherResults: [SearchItemInfo] = []
     @Published var selectedSearchTerm = ""
     
     private var _searchTerm: String = ""
@@ -43,7 +43,7 @@ class MainViewModel: SearchBarShowing {
                 
                 if self._searchTerm.isEmpty {
                     self.searchResults = []
-                    self.recentSearchSelections = []
+                    self.otherResults = []
                 } else {
                     self.fetchSearchResults(using: self._searchTerm) {
                         self.searchResults = $0
@@ -61,7 +61,7 @@ class MainViewModel: SearchBarShowing {
             }
             .store(in: &subscriptions)
             
-        recentSearchSelections = ...
+            otherResults = ...
     }
 }
 
@@ -175,13 +175,13 @@ SearchBarNavigation(viewModel)
     .barButtons(viewModel.barButtons())
 ```
 
-### Recents section title
+### Other Results section title
 
-Sets the title of the "Recents" section of the results - if not used, will default to "Recents"
+Sets the title of the other section of the results - if not used, will default to "Recents"
 
 ```swift
 SearchBarNavigation(viewModel)
-    .recentsSectionTitle("Recently viewed items -")
+    .otherResultsSectionTitle("Recently viewed items -")
 ```
 
 ### Results section title
@@ -193,22 +193,22 @@ SearchBarNavigation(viewModel)
     .resultsSectionTitle("Search results -")
 ```
 
-### Recent items text colour
+### Other Results items text colour
 
-The colour to use for the text of the recent items - defaults to Color(.label) if unused
+The colour to use for the text of the other results items - defaults to Color(.label) if unused
 
 ```swift
 SearchBarNavigation(viewModel)
-    .recentsTextColor(.black)
+    .otherResultsTextColor(.black)
 ```
 
-### Recent items background colour
+### Other Results items background colour
 
-The colour to use for the background of the recents area of the results list - defaults to Color(.systemBackground) if unused
+The colour to use for the background of the other area of the results list - defaults to Color(.systemBackground) if unused
 
 ```swift
 SearchBarNavigation(viewModel)
-    .recentsBackgroundColor(.orange)
+    .otherResultsBackgroundColor(.orange)
 ```
 
 ### Results items text colour
@@ -238,13 +238,13 @@ SearchBarNavigation(viewModel)
     .cancelButtonColor(.red)
 ```
 
-### Maximum number of recents
+### Maximum number of other results
 
 The maximum number of rows to show in the recents section - defaults to 3 if unused
 
 ```swift
 SearchBarNavigation(viewModel)
-    .maxRecents(5)
+    .maxOtherResults(5)
 ```
 
 ### Maximum number of search results

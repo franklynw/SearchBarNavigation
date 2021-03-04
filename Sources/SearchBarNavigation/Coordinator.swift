@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ButtonConfig
 
 
 public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearchBarDelegate {
@@ -24,13 +25,13 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
         var searchResultsController: UIHostingController<SearchResultsView<T>>?
         var searchResultsView = SearchResultsView(parent.viewModel)
         
-        searchResultsView.recentsSectionTitle = parent.recentsSectionTitle
+        searchResultsView.otherResultsSectionTitle = parent.otherResultsSectionTitle
         searchResultsView.resultsSectionTitle = parent.resultsSectionTitle
-        searchResultsView.recentsTextColor = parent.recentsTextColor
         searchResultsView.resultsTextColor = parent.resultsTextColor
-        searchResultsView.recentsBackgroundColor = parent.recentsBackgroundColor
+        searchResultsView.otherResultsTextColor = parent.otherResultsTextColor
         searchResultsView.resultsBackgroundColor = parent.resultsBackgroundColor
-        searchResultsView.maxRecents = parent.maxRecents
+        searchResultsView.otherResultsBackgroundColor = parent.otherResultsBackgroundColor
+        searchResultsView.maxOtherResults = parent.maxOtherResults
         searchResultsView.maxResults = parent.maxResults
         searchResultsView.itemSelected = parent.itemSelected
         
@@ -100,6 +101,26 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         parent.viewModel.searchTerm.wrappedValue = ""
         parent.viewModel.searchCancelled()
+    }
+    
+    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        if let searchFieldButton = parent.searchFieldButton {
+            
+            let button = searchFieldButton.button
+            button.tintColor = .gray
+            button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+
+            searchController.searchBar.searchTextField.leftView = button
+        }
+    }
+    
+    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        
+        let magnifyingGlass = UIImageView(image: UIImage(systemName: "magnifyingglass"))
+        magnifyingGlass.tintColor = .gray
+        
+        searchController.searchBar.searchTextField.leftView = magnifyingGlass
     }
     
     fileprivate func clearSearchBar() {
