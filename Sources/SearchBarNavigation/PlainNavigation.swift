@@ -84,7 +84,7 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
                     let viewModelStyle = parent.viewModel.navigationBarStyle
                     
                     switch parentStyle ?? viewModelStyle {
-                    case .colored(let textColor, _), .withImage(let textColor, _):
+                    case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
                         return textColor
                     case .none:
                         return nil

@@ -65,11 +65,27 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// Sets the title of the Other section of the results - if not used, will default to "Recents"
-    /// - Parameter otherResultsSectionTitle: a String
-    public func otherResultsSectionTitle(_ otherResultsSectionTitle: String) -> Self {
+    /// The colour to use for the background of the whole search results screen - defaults to white if unused
+    /// - Parameter searchViewBackgroundColor: a Color
+    public func searchViewBackgroundColor(_ searchViewBackgroundColor: Color) -> Self {
         var copy = self
-        copy.otherResultsSectionTitle = otherResultsSectionTitle
+        copy.searchViewBackgroundColor = searchViewBackgroundColor
+        return copy
+    }
+    
+    /// The colour to use for the headers of the results sections - defaults to grey if unused
+    /// - Parameter resultsHeadersColor: a Color
+    public func searchResultsHeadersColor(_ searchResultsHeadersColor: Color) -> Self {
+        var copy = self
+        copy.searchResultsHeadersColor = searchResultsHeadersColor
+        return copy
+    }
+    
+    /// The colour to use for the text of the result items - defaults to Color(.label) if unused
+    /// - Parameter searchResultsTextColor: a Color
+    public func searchResultsTextColor(_ searchResultsTextColor: Color) -> Self {
+        var copy = self
+        copy.searchResultsTextColor = searchResultsTextColor
         return copy
     }
     
@@ -81,35 +97,27 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// The colour to use for the text of the other results items - defaults to Color(.label) if unused
-    /// - Parameter recentsTextColor: a Color
-    public func otherResultsTextColor(_ otherResultsTextColor: Color) -> Self {
+    /// Sets the title of the Other section of the results - if not used, will default to "Recents"
+    /// - Parameter otherResultsSectionTitle: a String
+    public func otherResultsSectionTitle(_ otherResultsSectionTitle: String) -> Self {
         var copy = self
-        copy.otherResultsTextColor = otherResultsTextColor
+        copy.otherResultsSectionTitle = otherResultsSectionTitle
         return copy
     }
     
-    /// The colour to use for the background of the other results area of the results list - defaults to Color(.systemBackground) if unused
-    /// - Parameter recentsBackgroundColor: a Color
-    public func otherResultsBackgroundColor(_ otherResultsBackgroundColor: Color) -> Self {
+    /// The view to display if the other results are empty
+    /// - Parameter otherResultsEmptyView: a view
+    public func otherResultsEmptyView<T: View>(@ViewBuilder _ otherResultsEmptyView: @escaping () -> T) -> Self {
         var copy = self
-        copy.otherResultsBackgroundColor = otherResultsBackgroundColor
+        copy.otherResultsEmptyView = AnyView(otherResultsEmptyView())
         return copy
     }
     
-    /// The colour to use for the text of the result items - defaults to Color(.label) if unused
-    /// - Parameter resultsTextColor: a Color
-    public func resultsTextColor(_ resultsTextColor: Color) -> Self {
+    /// The view to display if the results are empty
+    /// - Parameter resultsEmptyView: a view
+    public func resultsEmptyView<T: View>(@ViewBuilder _ resultsEmptyView: @escaping () -> T) -> Self {
         var copy = self
-        copy.resultsTextColor = resultsTextColor
-        return copy
-    }
-    
-    /// The colour to use for the background of the results area of the results list - defaults to Color(.systemBackground) if unused
-    /// - Parameter resultsBackgroundColor: a Color
-    public func resultsBackgroundColor(_ resultsBackgroundColor: Color) -> Self {
-        var copy = self
-        copy.resultsBackgroundColor = resultsBackgroundColor
+        copy.resultsEmptyView = AnyView(resultsEmptyView())
         return copy
     }
     

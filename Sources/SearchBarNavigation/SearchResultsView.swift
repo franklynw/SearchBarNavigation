@@ -16,12 +16,13 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     
     let id = "SearchResultsView"
     
+    internal var searchViewBackgroundColor: Color?
     internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
-    internal var resultsTextColor: Color?
-    internal var resultsBackgroundColor: Color?
-    internal var otherResultsTextColor: Color?
-    internal var otherResultsBackgroundColor: Color?
+    internal var otherResultsEmptyView: AnyView?
+    internal var resultsEmptyView: AnyView?
+    internal var searchResultsHeadersColor: Color?
+    internal var searchResultsTextColor: Color?
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
@@ -38,20 +39,24 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         
         ZStack {
             
+            searchViewBackgroundColor
+            
             List {
                 
-                if viewModel.otherResults?.isEmpty == false {
-                    Section(header: Text(otherResultsSectionTitle ?? NSLocalizedString("Recents", bundle: Bundle.module, comment: "Recents")).font(.caption)) {
+                if viewModel.otherResults?.isEmpty == false || otherResultsEmptyView != nil {
+                    Section(header: ListHeader(color: searchResultsHeadersColor, text: otherResultsSectionTitle ?? NSLocalizedString("Recents", bundle: Bundle.module, comment: "Recents"))) {
                         recentItems()
                     }
                     .textCase(nil)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
                 
-                if viewModel.searchResults?.isEmpty == false {
-                    Section(header: Text(resultsSectionTitle ?? NSLocalizedString("Results", bundle: Bundle.module, comment: "Results")).font(.caption)) {
+                if viewModel.searchResults?.isEmpty == false || resultsEmptyView != nil {
+                    Section(header: ListHeader(color: searchResultsHeadersColor, text: resultsSectionTitle ?? NSLocalizedString("Results", bundle: Bundle.module, comment: "Results"))) {
                         resultsItems()
                     }
                     .textCase(nil)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
             }
             .opacity(opacity)
@@ -75,14 +80,21 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     private func recentItems() -> some View {
         
         if let otherResults = viewModel.otherResults {
-            ForEach(otherResults.prefix(maxOtherResults), id: \.self) { item in
-                T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: otherResultsTextColor, select: itemSelected)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        finish(item)
-                    }
+            if otherResults.isEmpty {
+                otherResultsEmptyView
+                    .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listRowBackground(Color(.clear))
+            } else {
+                ForEach(otherResults.prefix(maxOtherResults), id: \.self) { item in
+                    T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: searchResultsTextColor ?? Color(.label), select: itemSelected)
+                        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            finish(item)
+                        }
+                }
+                .listRowBackground(Color(.clear))
             }
-            .listRowBackground(otherResultsBackgroundColor ?? Color(.systemBackground))
         }
     }
     
@@ -90,14 +102,21 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     private func resultsItems() -> some View {
         
         if let searchResults = viewModel.searchResults {
-            ForEach(searchResults.prefix(maxResults), id: \.self) { item in
-                T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: resultsTextColor, select: itemSelected)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        finish(item)
-                    }
+            if searchResults.isEmpty {
+                resultsEmptyView
+                    .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listRowBackground(Color(.clear))
+            } else {
+                ForEach(searchResults.prefix(maxResults), id: \.self) { item in
+                    T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: searchResultsTextColor ?? Color(.label), select: itemSelected)
+                        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            finish(item)
+                        }
+                }
+                .listRowBackground(Color(.clear))
             }
-            .listRowBackground(resultsBackgroundColor ?? Color(.systemBackground))
         }
     }
     
@@ -109,5 +128,26 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         viewModel.searchTerm.wrappedValue = ""
         
         finished?()
+    }
+    
+    struct ListHeader: View {
+        
+        var color: Color?
+        var text: String
+        
+        var body: some View {
+            
+            ZStack {
+                color
+                
+                HStack {
+                    Text(text)
+                        .font(.caption)
+                        .padding(.leading, 16)
+                    
+                    Spacer()
+                }
+            }
+        }
     }
 }

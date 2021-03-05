@@ -43,6 +43,15 @@ extension NavigationConfiguring {
             
             setBackgroundImage(image, for: navigationController.navigationBar)
             
+        case .withColorAndImage(let titleColor, let backgroundColor, let image):
+            
+            navBarAppearance.titleTextAttributes = [.foregroundColor: titleColor.uiColor]
+            navBarAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor.uiColor]
+            navBarAppearance.backgroundColor = backgroundColor.uiColor
+            navigationController.navigationBar.backgroundColor = backgroundColor.uiColor // this is needed as well as the appearance to work when it has a transparent background
+        
+            setBackgroundImage(image, for: navigationController.navigationBar)
+            
         case .none:
             break
         }
@@ -66,9 +75,14 @@ extension NavigationConfiguring {
             
             if let backgroundView = navigationBar.subviews.first {
                 
+                if let _ = backgroundView.subviews.first(where: { $0.tag == 9999 }) {
+                    return
+                }
+                
                 let imageView = UIImageView(image: image)
                 imageView.translatesAutoresizingMaskIntoConstraints = false
                 imageView.alpha = 0
+                imageView.tag = 9999
                 
                 backgroundView.insertSubview(imageView, at: 0)
                 

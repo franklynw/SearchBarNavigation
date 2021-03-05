@@ -16,5 +16,8 @@ public enum NavigationBarStyle {
     
     /// Allows the title to be coloured, and a background image set
     case withImage(textColor: Color, image: UIImage)
+    
+    /// Allows the title and background to be coloured, and a background image set
+    case withColorAndImage(textColor: Color, backgroundColor: Color, image: UIImage)
 }
 

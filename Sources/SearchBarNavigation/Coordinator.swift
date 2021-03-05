@@ -25,12 +25,13 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
         var searchResultsController: UIHostingController<SearchResultsView<T>>?
         var searchResultsView = SearchResultsView(parent.viewModel)
         
+        searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
         searchResultsView.otherResultsSectionTitle = parent.otherResultsSectionTitle
         searchResultsView.resultsSectionTitle = parent.resultsSectionTitle
-        searchResultsView.resultsTextColor = parent.resultsTextColor
-        searchResultsView.otherResultsTextColor = parent.otherResultsTextColor
-        searchResultsView.resultsBackgroundColor = parent.resultsBackgroundColor
-        searchResultsView.otherResultsBackgroundColor = parent.otherResultsBackgroundColor
+        searchResultsView.otherResultsEmptyView = parent.otherResultsEmptyView
+        searchResultsView.resultsEmptyView = parent.resultsEmptyView
+        searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
+        searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
         searchResultsView.maxOtherResults = parent.maxOtherResults
         searchResultsView.maxResults = parent.maxResults
         searchResultsView.itemSelected = parent.itemSelected
@@ -128,7 +129,7 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
                 let viewModelStyle = parent.viewModel.navigationBarStyle
                 
                 switch parentStyle ?? viewModelStyle {
-                case .colored(let textColor, _), .withImage(let textColor, _):
+                case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
                     return textColor
                 case .none:
                     return nil
