@@ -12,8 +12,8 @@ import ButtonConfig
 extension SearchBarNavigation {
     
     /// Sets the navigation bar style
-    /// - Parameter style: a Style case
-    public func navigationBarStyle(_ style: Style) -> Self {
+    /// - Parameter style: a NavigationBarStyle case
+    public func navigationBarStyle(_ style: NavigationBarStyle) -> Self {
         var copy = self
         copy.style = style
         return copy
