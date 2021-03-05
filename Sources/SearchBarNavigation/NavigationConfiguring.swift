@@ -5,31 +5,37 @@
 //  Created by Franklyn Weber on 04/03/2021.
 //
 
-import UIKit
+import SwiftUI
 
 
 protocol NavigationConfiguring {
     var style: NavigationBarStyle? { get }
     var hasTranslucentBackground: Bool { get }
-    func setupStyle(for navigationController: UINavigationController)
+    func setupStyle<T: NavigationStyleProviding>(for navigationController: UINavigationController, viewModel: T)
     func setBackgroundImage(_ image: UIImage, for navigationBar: UINavigationBar)
+}
+
+public extension NavigationStyleProviding {
+    var navigationBarStyle: NavigationBarStyle? {
+        return nil
+    }
 }
 
 
 extension NavigationConfiguring {
     
-    func setupStyle(for navigationController: UINavigationController) {
+    func setupStyle<T: NavigationStyleProviding>(for navigationController: UINavigationController, viewModel: T) {
         
         let navBarAppearance = UINavigationBarAppearance()
         
-        switch style {
+        switch style ?? viewModel.navigationBarStyle {
         case .colored(let titleColor, let backgroundColor):
             
             navBarAppearance.titleTextAttributes = [.foregroundColor: titleColor.uiColor]
             navBarAppearance.largeTitleTextAttributes = [.foregroundColor: titleColor.uiColor]
             navBarAppearance.backgroundColor = backgroundColor.uiColor
             navigationController.navigationBar.backgroundColor = backgroundColor.uiColor // this is needed as well as the appearance to work when it has a transparent background
-        
+            
         case .withImage(let titleColor, let image):
             
             navBarAppearance.titleTextAttributes = [.foregroundColor: titleColor.uiColor]

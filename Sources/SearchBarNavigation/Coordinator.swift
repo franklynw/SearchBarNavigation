@@ -9,7 +9,7 @@ import SwiftUI
 import ButtonConfig
 
 
-public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearchBarDelegate {
+public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content: View>: NSObject, UISearchBarDelegate {
     
     let parent: SearchBarNavigation<T, Content>
     
@@ -60,25 +60,13 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
         
-        if let barButtons = parent.barButtons {
-            
-            let leadingButtons = barButtons.leading.compactMap { $0.barButtonItem }
-            let trailingButtons = barButtons.trailing.compactMap { $0.barButtonItem }
-            
-            if let color = barButtons.color {
-                (leadingButtons + trailingButtons).forEach {
-                    $0.tintColor = color.uiColor
-                }
-            }
-            
-            rootViewController.navigationItem.leftBarButtonItems = leadingButtons
-            rootViewController.navigationItem.rightBarButtonItems = trailingButtons
-        }
+        setupBarButtons()
         
         rootViewController.navigationItem.searchController = searchController
     }
     
     func update(content: Content) {
+        setupBarButtons()
         rootViewController.rootView = content
         rootViewController.view.setNeedsDisplay()
     }
@@ -125,5 +113,36 @@ public class Coordinator<T: SearchBarShowing, Content: View>: NSObject, UISearch
     
     fileprivate func clearSearchBar() {
         searchController.searchBar.text = ""
+    }
+    
+    private func setupBarButtons() {
+        
+        if let barButtons = parent.barButtons {
+            
+            let leadingButtons = barButtons.leading.compactMap { $0.barButtonItem }
+            let trailingButtons = barButtons.trailing.compactMap { $0.barButtonItem }
+            
+            let color: Color? = barButtons.color ?? {
+                
+                let parentStyle = parent.style
+                let viewModelStyle = parent.viewModel.navigationBarStyle
+                
+                switch parentStyle ?? viewModelStyle {
+                case .colored(let textColor, _), .withImage(let textColor, _):
+                    return textColor
+                case .none:
+                    return nil
+                }
+            }()
+            
+            if let color = color {
+                (leadingButtons + trailingButtons).forEach {
+                    $0.tintColor = color.uiColor
+                }
+            }
+            
+            rootViewController.navigationItem.leftBarButtonItems = leadingButtons
+            rootViewController.navigationItem.rightBarButtonItems = trailingButtons
+        }
     }
 }

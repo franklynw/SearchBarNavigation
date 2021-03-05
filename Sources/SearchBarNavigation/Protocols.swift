@@ -8,7 +8,12 @@
 import SwiftUI
 
 
-public protocol SearchBarShowing: ObservableObject {
+public protocol NavigationStyleProviding: ObservableObject {
+    /// Sets the navigation bar style
+    var navigationBarStyle: NavigationBarStyle? { get }
+}
+
+public protocol SearchBarShowing: NavigationStyleProviding {
     
     /// The type of the items used to populate the search results list
     associatedtype SearchListItemType: SearchResultsListItem where SearchListItemType.Parent == Self

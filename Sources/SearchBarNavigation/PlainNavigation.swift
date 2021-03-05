@@ -9,8 +9,9 @@ import FWCommonProtocols
 import ButtonConfig
 
 
-public struct PlainNavigation<Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
+public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
     
+    @ObservedObject internal var viewModel: T
     internal let content: () -> Content
     
     internal var style: NavigationBarStyle?
@@ -20,7 +21,8 @@ public struct PlainNavigation<Content: View>: UIViewControllerRepresentable, Nav
     internal var barButtons: BarButtons?
     
     
-    public init(@ViewBuilder content: @escaping () -> Content) {
+    public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
+        self.viewModel = viewModel
         self.content = content
     }
 
@@ -29,34 +31,47 @@ public struct PlainNavigation<Content: View>: UIViewControllerRepresentable, Nav
         let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
-        setupStyle(for: navigationController)
+        setupStyle(for: navigationController, viewModel: viewModel)
         
         return navigationController
     }
     
     public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+        setupStyle(for: uiViewController, viewModel: viewModel)
         context.coordinator.update(content: content())
     }
     
-    public func makeCoordinator() -> FWCoordinator<Content> {
+    public func makeCoordinator() -> FWCoordinator<T, Content> {
         FWCoordinator(self)
     }
     
     
-    public class FWCoordinator<Content: View>: NSObject {
+    public class FWCoordinator<T: NavigationStyleProviding, Content: View>: NSObject {
         
-        let parent: PlainNavigation<Content>
+        let parent: PlainNavigation<T, Content>
         
         let rootViewController: UIHostingController<Content>
         
         
-        init(_ parent: PlainNavigation<Content>) {
+        init(_ parent: PlainNavigation<T, Content>) {
             
             self.parent = parent
             
             rootViewController = UIHostingController(rootView: parent.content())
+            rootViewController.view.backgroundColor = .clear
             
             super.init()
+            
+            setupBarButtons()
+        }
+        
+        func update(content: Content) {
+            setupBarButtons()
+            rootViewController.rootView = content
+            rootViewController.view.setNeedsDisplay()
+        }
+        
+        private func setupBarButtons() {
             
             if let barButtons = parent.barButtons {
                 
@@ -65,7 +80,10 @@ public struct PlainNavigation<Content: View>: UIViewControllerRepresentable, Nav
                 
                 let color: Color? = barButtons.color ?? {
                     
-                    switch parent.style {
+                    let parentStyle = parent.style
+                    let viewModelStyle = parent.viewModel.navigationBarStyle
+                    
+                    switch parentStyle ?? viewModelStyle {
                     case .colored(let textColor, _), .withImage(let textColor, _):
                         return textColor
                     case .none:
@@ -82,11 +100,6 @@ public struct PlainNavigation<Content: View>: UIViewControllerRepresentable, Nav
                 rootViewController.navigationItem.leftBarButtonItems = leadingButtons
                 rootViewController.navigationItem.rightBarButtonItems = trailingButtons
             }
-        }
-        
-        func update(content: Content) {
-            rootViewController.rootView = content
-            rootViewController.view.setNeedsDisplay()
         }
     }
 }

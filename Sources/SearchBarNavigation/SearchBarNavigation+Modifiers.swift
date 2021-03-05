@@ -11,7 +11,7 @@ import ButtonConfig
 
 extension SearchBarNavigation {
     
-    /// Sets the navigation bar style
+    /// Sets the navigation bar style - will override any value set by the viewModel
     /// - Parameter style: a NavigationBarStyle case
     public func navigationBarStyle(_ style: NavigationBarStyle) -> Self {
         var copy = self

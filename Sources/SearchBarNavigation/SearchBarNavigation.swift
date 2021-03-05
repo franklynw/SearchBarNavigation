@@ -10,9 +10,9 @@ import FWCommonProtocols
 import ButtonConfig
 
 
-public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
+public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
     
-    internal let viewModel: T
+    @ObservedObject internal var viewModel: T
     internal let content: () -> Content
     
     internal var style: NavigationBarStyle?
@@ -44,7 +44,7 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
         let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
-        setupStyle(for: navigationController)
+        setupStyle(for: navigationController, viewModel: viewModel)
         
         context.coordinator.searchController.searchBar.delegate = context.coordinator
         
@@ -52,6 +52,7 @@ public struct SearchBarNavigation<T: SearchBarShowing, Content: View>: UIViewCon
     }
     
     public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+        setupStyle(for: uiViewController, viewModel: viewModel)
         context.coordinator.update(content: content())
     }
     
