@@ -16,12 +16,13 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "FWCommonProtocols", url: "https://github.com/franklynw/FWCommonProtocols.git", .upToNextMajor(from: "1.0.0")),
-        .package(name: "ButtonConfig", url: "https://github.com/franklynw/ButtonConfig.git", .upToNextMajor(from: "1.0.0"))
+        .package(name: "ButtonConfig", url: "https://github.com/franklynw/ButtonConfig.git", .upToNextMajor(from: "1.0.0")),
+        .package(name: "FWMenu", url: "https://github.com/franklynw/FWMenu.git", .upToNextMajor(from: "1.0.0"))
     ],
     targets: [
         .target(
             name: "SearchBarNavigation",
-            dependencies: ["FWCommonProtocols", "ButtonConfig"]),
+            dependencies: ["FWCommonProtocols", "ButtonConfig", "FWMenu"]),
         .testTarget(
             name: "SearchBarNavigationTests",
             dependencies: ["SearchBarNavigation"]),

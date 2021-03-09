@@ -7,6 +7,7 @@
 import SwiftUI
 import FWCommonProtocols
 import ButtonConfig
+import FWMenu
 
 
 public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
@@ -19,6 +20,7 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     internal var hasTranslucentBackground = false
     internal var placeholder: String?
     internal var barButtons: BarButtons?
+    internal var barMenuButtons: BarMenuButtons?
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
@@ -73,33 +75,74 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
         
         private func setupBarButtons() {
             
+            var leadingButtons = [UIBarButtonItem]()
+            var trailingButtons = [UIBarButtonItem]()
+            var buttonsColor: Color? = nil
+            
             if let barButtons = parent.barButtons {
-                
-                let leadingButtons = barButtons.leading.compactMap { $0.barButtonItem }
-                let trailingButtons = barButtons.trailing.compactMap { $0.barButtonItem }
-                
-                let color: Color? = barButtons.color ?? {
-                    
-                    let parentStyle = parent.style
-                    let viewModelStyle = parent.viewModel.navigationBarStyle
-                    
-                    switch parentStyle ?? viewModelStyle {
-                    case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
-                        return textColor
-                    case .none:
-                        return nil
-                    }
-                }()
-                
-                if let color = color {
-                    (leadingButtons + trailingButtons).forEach {
-                        $0.tintColor = color.uiColor
-                    }
-                }
-                
-                rootViewController.navigationItem.leftBarButtonItems = leadingButtons
-                rootViewController.navigationItem.rightBarButtonItems = trailingButtons
+                leadingButtons += barButtons.leading.compactMap { $0.barButtonItem }
+                trailingButtons += barButtons.trailing.compactMap { $0.barButtonItem }
+                buttonsColor = barButtons.color
             }
+            
+            if let barMenuButtons = parent.barMenuButtons {
+                
+                leadingButtons += barMenuButtons.leading.enumerated().map { pair in
+                    let buttonConfig = pair.element
+                    let barButton: UIBarButtonItem
+                    if let imageSystemName = buttonConfig.imageSystemName {
+                        barButton = UIBarButtonItem.button(with: imageSystemName) {
+                            MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: CGFloat(pair.offset + 1) * 0.15)
+                        }
+                    } else {
+                        let imageName = buttonConfig.imageName!
+                        let image = UIImage(named: imageName)!
+                        barButton = UIBarButtonItem.button(with: image) {
+                            MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: CGFloat(pair.offset + 1) * 0.15)
+                        }
+                    }
+                    return barButton
+                }
+                trailingButtons += barMenuButtons.trailing.enumerated().map { pair in
+                    let buttonConfig = pair.element
+                    let barButton: UIBarButtonItem
+                    if let imageSystemName = buttonConfig.imageSystemName {
+                        barButton = UIBarButtonItem.button(with: imageSystemName) {
+                            MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: 1 - CGFloat(pair.offset + 1) * 0.15)
+                        }
+                    } else {
+                        let imageName = buttonConfig.imageName!
+                        let image = UIImage(named: imageName)!
+                        barButton = UIBarButtonItem.button(with: image) {
+                            MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: 1 - CGFloat(pair.offset + 1) * 0.15)
+                        }
+                    }
+                    return barButton
+                }
+                buttonsColor = barMenuButtons.color
+            }
+            
+            let color: Color? = buttonsColor ?? {
+                
+                let parentStyle = parent.style
+                let viewModelStyle = parent.viewModel.navigationBarStyle
+                
+                switch parentStyle ?? viewModelStyle {
+                case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
+                    return textColor
+                case .none:
+                    return nil
+                }
+            }()
+            
+            if let color = color {
+                (leadingButtons + trailingButtons).forEach {
+                    $0.tintColor = color.uiColor
+                }
+            }
+            
+            rootViewController.navigationItem.leftBarButtonItems = leadingButtons
+            rootViewController.navigationItem.rightBarButtonItems = trailingButtons
         }
     }
 }

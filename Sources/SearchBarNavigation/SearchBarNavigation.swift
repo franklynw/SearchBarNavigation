@@ -8,6 +8,7 @@
 import SwiftUI
 import FWCommonProtocols
 import ButtonConfig
+import FWMenu
 
 
 public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
@@ -21,6 +22,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var placeholder: String?
     internal var searchScopeTitles: [String] = []
     internal var barButtons: BarButtons?
+    internal var barMenuButtons: BarMenuButtons?
     internal var searchFieldButton: ImageButtonConfig?
     internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
