@@ -23,7 +23,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var searchScopeTitles: [String] = []
     internal var barButtons: BarButtons?
     internal var barMenuButtons: BarMenuButtons?
-    internal var searchFieldButton: ImageButtonConfig?
+    internal var searchFieldButton: SearchFieldButton?
     internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
     internal var otherResultsEmptyView: AnyView?

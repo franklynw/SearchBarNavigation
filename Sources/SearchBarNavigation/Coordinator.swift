@@ -95,14 +95,49 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
-        if let searchFieldButton = parent.searchFieldButton {
+        var button : UIButton?
+        
+        switch parent.searchFieldButton {
+        case .button(let buttonConfig):
             
-            let button = searchFieldButton.button
-            button.tintColor = .gray
-            button.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-
-            searchController.searchBar.searchTextField.leftView = button
+            button = buttonConfig.button
+            
+        case .menu(let barMenuButton):
+            
+            let buttonAction = UIAction { _ in
+                
+                guard let button = button else {
+                    return
+                }
+                let buttonRect = button.convert(button.bounds, to: self.rootViewController.view)
+                
+                MenuPresenter.present(parent: barMenuButton, with: buttonRect)
+            }
+            button = UIButton(type: .system, primaryAction: buttonAction)
+            
+            let image: UIImage?
+            if let imageName = barMenuButton.imageName {
+                image = UIImage(named: imageName)
+            } else if let imageSystemName = barMenuButton.imageSystemName {
+                image = UIImage(systemName: imageSystemName)
+            } else {
+                image = nil
+            }
+            
+            button?.setImage(image, for: UIControl.State())
+            
+        case .none:
+            break
         }
+        
+        guard let searchButton = button else {
+            return
+        }
+        
+        searchButton.tintColor = .gray
+        searchButton.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+
+        searchController.searchBar.searchTextField.leftView = searchButton
     }
     
     public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {

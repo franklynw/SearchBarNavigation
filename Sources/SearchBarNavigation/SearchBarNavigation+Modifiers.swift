@@ -66,8 +66,8 @@ extension SearchBarNavigation {
     }
     
     /// Button for the left of the search text field
-    /// - Parameter searchFieldButton: an ImageButtonConfig instance
-    public func searchFieldButton(_ searchFieldButton: ImageButtonConfig) -> Self {
+    /// - Parameter searchFieldButton: an SearchFieldButton case
+    public func searchFieldButton(_ searchFieldButton: SearchFieldButton) -> Self {
         var copy = self
         copy.searchFieldButton = searchFieldButton
         return copy
