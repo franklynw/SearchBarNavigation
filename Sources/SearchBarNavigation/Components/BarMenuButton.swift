@@ -38,16 +38,3 @@ public struct BarMenuButton: FWMenuPresenting {
         imageSystemName = nil
     }
 }
-
-
-public struct BarMenuButtons {
-    let leading: [BarMenuButton]
-    let trailing: [BarMenuButton]
-    let color: Color?
-    
-    public init(leading: [BarMenuButton] = [], trailing: [BarMenuButton] = [], color: Color? = nil) {
-        self.leading = leading
-        self.trailing = trailing
-        self.color = color
-    }
-}

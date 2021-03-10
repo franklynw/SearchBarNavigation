@@ -10,13 +10,19 @@ import ButtonConfig
 
 
 public struct BarButtons {
-    let leading: [ImageButtonConfig]
-    let trailing: [ImageButtonConfig]
+    let leading: [BarButton]
+    let trailing: [BarButton]
     let color: Color?
     
-    public init(leading: [ImageButtonConfig] = [], trailing: [ImageButtonConfig] = [], color: Color? = nil) {
+    public init(leading: [BarButton] = [], trailing: [BarButton] = [], color: Color? = nil) {
         self.leading = leading
         self.trailing = trailing
         self.color = color
     }
+}
+
+
+public enum BarButton {
+    case button(ImageButtonConfig)
+    case menu(BarMenuButton)
 }

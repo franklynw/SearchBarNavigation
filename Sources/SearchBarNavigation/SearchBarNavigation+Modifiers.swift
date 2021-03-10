@@ -57,14 +57,6 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// If you want to use the more customisable FWMenu for the bar buttons, set them up with this function
-    /// - Parameter barMenuButtons: a BarMenuButtons instance
-    public func barMenuButtons(_ barMenuButtons: BarMenuButtons) -> Self {
-        var copy = self
-        copy.barMenuButtons = barMenuButtons
-        return copy
-    }
-    
     /// Button for the left of the search text field
     /// - Parameter searchFieldButton: an SearchFieldButton case
     public func searchFieldButton(_ searchFieldButton: SearchFieldButton) -> Self {

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FWMenu
 
 
 protocol NavigationConfiguring {
@@ -104,5 +105,61 @@ extension NavigationConfiguring {
                 }
             }
         }
+    }
+    
+    func setupBarButtons(_ barButtons: BarButtons, style: NavigationBarStyle?, for viewController: UIViewController) {
+        
+        func makeMenuButton(_ buttonConfig: BarMenuButton, relativeX: CGFloat) -> UIBarButtonItem {
+            
+            let barButton: UIBarButtonItem
+            if let imageSystemName = buttonConfig.imageSystemName {
+                barButton = UIBarButtonItem.button(with: imageSystemName) {
+                    MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: relativeX)
+                }
+            } else {
+                let imageName = buttonConfig.imageName!
+                let image = UIImage(named: imageName)!
+                barButton = UIBarButtonItem.button(with: image) {
+                    MenuPresenter.presentFromNavBar(parent: buttonConfig, withRelativeX: relativeX)
+                }
+            }
+            return barButton
+        }
+        
+        let leadingButtons: [UIBarButtonItem] = barButtons.leading.enumerated().map { pair in
+            switch pair.element {
+            case .button(let buttonConfig):
+                return buttonConfig.barButtonItem
+            case .menu(let buttonConfig):
+                return makeMenuButton(buttonConfig, relativeX: CGFloat(pair.offset + 1) * 0.15)
+            }
+        }
+        let trailingButtons: [UIBarButtonItem] = barButtons.trailing.enumerated().map { pair in
+            switch pair.element {
+            case .button(let buttonConfig):
+                return buttonConfig.barButtonItem
+            case .menu(let buttonConfig):
+                return makeMenuButton(buttonConfig, relativeX: 1 - CGFloat(pair.offset + 1) * 0.15)
+            }
+        }
+        
+        let color: Color? = barButtons.color ?? {
+            
+            switch style {
+            case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
+                return textColor
+            case .none:
+                return nil
+            }
+        }()
+        
+        if let color = color {
+            (leadingButtons + trailingButtons).forEach {
+                $0.tintColor = color.uiColor
+            }
+        }
+        
+        viewController.navigationItem.leftBarButtonItems = leadingButtons
+        viewController.navigationItem.rightBarButtonItems = trailingButtons
     }
 }
