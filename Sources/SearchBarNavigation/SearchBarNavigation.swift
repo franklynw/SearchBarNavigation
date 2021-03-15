@@ -35,6 +35,8 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
+    internal var showsLastResultsOnActivate = false
+    internal var cancelsSearchOnKeyboardDismiss = false
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {

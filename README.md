@@ -315,6 +315,24 @@ SearchBarNavigation(viewModel)
     }
 ```
 
+### Show last results on activate
+
+If you use this modifier, then previous results will be displayed before any new search is triggered
+
+```swift
+SearchBarNavigation(viewModel)
+    .showLastResultsOnActivate
+```
+
+### Cancel search when tapping the keyboard dismiss button
+
+When you tap the keyboard dismiss button in the inputAccessoryView (if configured), the default behaviour is to NOT cancel the search screen, but to leave all the results showing. You can override this behaviour with this modifier -
+
+```swift
+SearchBarNavigation(viewModel)
+    .cancelSearchOnKeyboardDismiss
+```
+
 
 ## NavigationBarStyle
 
@@ -387,14 +405,14 @@ There is also a PlainNavigation view, which offers the same customisation option
 
 ## Dependencies
 
-Requires FWMenu, which is linked. GitHub page is [here](https://github.com/franklynw/FWMenu)
-Requires ButtonConfig, which is linked. GitHub page is [here](https://github.com/franklynw/ButtonConfig)
-Requires FWCommonProtocols, which is linked. GitHub page is [here](https://github.com/franklynw/FWCommonProtocols)
+* Requires FWMenu, which is linked. GitHub page is [here](https://github.com/franklynw/FWMenu)
+* Requires ButtonConfig, which is linked. GitHub page is [here](https://github.com/franklynw/ButtonConfig)
+* Requires FWCommonProtocols, which is linked. GitHub page is [here](https://github.com/franklynw/FWCommonProtocols)
 
 
 ## Issues
 
-It all seems to work well, but there are probably still bugs... If anyone can suggest a better way of doing what I've done for the navBar background image (in SearchBarNavigation - setBackgroundImage) I'd really like to hear!
+It all seems to work well, but there are probably still bugs... If anyone can suggest a better way of doing what I've done for the navBar background image (in NavigationConfiguring - setBackgroundImage) I'd really like to hear!
 
 
 ## License  

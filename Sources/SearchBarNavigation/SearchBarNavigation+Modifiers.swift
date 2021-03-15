@@ -160,4 +160,18 @@ extension SearchBarNavigation {
         copy.itemSelected = itemSelected
         return copy
     }
+    
+    /// If the viewModel has previous results, show them when the user taps the search field
+    public var showLastResultsOnActivate: Self {
+        var copy = self
+        copy.showsLastResultsOnActivate = true
+        return copy
+    }
+    
+    /// Cancel the search when dismissing the keyboard (default behaviour is to leave the results view showing)
+    public var cancelSearchOnKeyboardDismiss: Self {
+        var copy = self
+        copy.cancelsSearchOnKeyboardDismiss = true
+        return copy
+    }
 }
