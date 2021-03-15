@@ -1,6 +1,6 @@
 //
-//  Coordinator.swift
-//  
+//  SearchCoordinator.swift
+//
 //
 //  Created by Franklyn Weber on 13/02/2021.
 //
@@ -10,7 +10,7 @@ import ButtonConfig
 import FWMenu
 
 
-public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content: View>: NSObject, UISearchBarDelegate {
+public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, Content: View>: NSObject, UISearchBarDelegate {
     
     let parent: SearchBarNavigation<T, Content>
     
@@ -62,6 +62,7 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
         
+        setupInputAccessoryView()
         setupBarButtons()
         
         rootViewController.navigationItem.searchController = searchController
@@ -89,8 +90,7 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        parent.viewModel.searchTerm.wrappedValue = ""
-        parent.viewModel.searchCancelled()
+        searchWasCancelled()
     }
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -160,5 +160,29 @@ public class Coordinator<T: SearchBarShowing & NavigationStyleProviding, Content
         
         let style = parent.style ?? parent.viewModel.navigationBarStyle
         parent.setupBarButtons(barButtons, style: style, for: rootViewController)
+    }
+    
+    private func setupInputAccessoryView() {
+                
+        guard let searchInputAccessory = parent.searchInputAccessory else {
+            return
+        }
+        
+        let buttonColor: UIColor = parent.cancelButtonColor != nil ? UIColor(parent.cancelButtonColor!) : .label
+        let accessoryView = searchInputAccessory.view(buttonColor: buttonColor, dismissKeyboard: { [weak self] in
+            self?.cancelSearch()
+        })
+        
+        searchController.searchBar.inputAccessoryView = accessoryView
+    }
+    
+    private func cancelSearch() {
+        searchController.isActive = false
+        searchWasCancelled()
+    }
+    
+    private func searchWasCancelled() {
+        parent.viewModel.searchTerm.wrappedValue = ""
+        parent.viewModel.searchCancelled()
     }
 }

@@ -153,8 +153,9 @@ extension NavigationConfiguring {
             }
         }()
         
-        if let color = color {
-            (leadingButtons + trailingButtons).forEach {
+        (leadingButtons + trailingButtons).forEach {
+            $0.width = 44 // there seems to be an issue where buttons have a very small tap area, this seems to improve it
+            if let color = color {
                 $0.tintColor = color.uiColor
             }
         }

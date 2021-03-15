@@ -22,11 +22,12 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var placeholder: String?
     internal var searchScopeTitles: [String] = []
     internal var barButtons: BarButtons?
-    internal var searchFieldButton: SearchFieldButton?
+    internal var searchFieldButton: BarButton?
+    internal var searchInputAccessory: SearchInputAccessory?
     internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
-    internal var otherResultsEmptyView: AnyView?
-    internal var resultsEmptyView: AnyView?
+    internal var otherResultsEmptyView: (() -> AnyView)?
+    internal var resultsEmptyView: (() -> AnyView)?
     internal var searchResultsHeadersColor: Color?
     internal var searchResultsTextColor: Color?
     internal var searchViewBackgroundColor: Color?
@@ -58,7 +59,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
         context.coordinator.update(content: content())
     }
     
-    public func makeCoordinator() -> Coordinator<T, Content> {
-        Coordinator(self)
+    public func makeCoordinator() -> SearchCoordinator<T, Content> {
+        SearchCoordinator(self)
     }
 }

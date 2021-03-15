@@ -59,9 +59,17 @@ extension SearchBarNavigation {
     
     /// Button for the left of the search text field
     /// - Parameter searchFieldButton: an SearchFieldButton case
-    public func searchFieldButton(_ searchFieldButton: SearchFieldButton) -> Self {
+    public func searchFieldButton(_ searchFieldButton: BarButton) -> Self {
         var copy = self
         copy.searchFieldButton = searchFieldButton
+        return copy
+    }
+    
+    /// Gives the searchField an inputAccessoryView
+    /// - Parameter searchInputAccessory: a SearchInputAccessory describing the inputAccessoryView
+    public func searchInputAccessory(_ searchInputAccessory: SearchInputAccessory) -> Self {
+        var copy = self
+        copy.searchInputAccessory = searchInputAccessory
         return copy
     }
     
@@ -109,7 +117,7 @@ extension SearchBarNavigation {
     /// - Parameter otherResultsEmptyView: a view
     public func otherResultsEmptyView<T: View>(@ViewBuilder _ otherResultsEmptyView: @escaping () -> T) -> Self {
         var copy = self
-        copy.otherResultsEmptyView = AnyView(otherResultsEmptyView())
+        copy.otherResultsEmptyView = { AnyView(otherResultsEmptyView()) }
         return copy
     }
     
@@ -117,7 +125,7 @@ extension SearchBarNavigation {
     /// - Parameter resultsEmptyView: a view
     public func resultsEmptyView<T: View>(@ViewBuilder _ resultsEmptyView: @escaping () -> T) -> Self {
         var copy = self
-        copy.resultsEmptyView = AnyView(resultsEmptyView())
+        copy.resultsEmptyView = { AnyView(resultsEmptyView()) }
         return copy
     }
     

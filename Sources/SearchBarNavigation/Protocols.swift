@@ -18,7 +18,7 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// The type of the items used to populate the search results list
     associatedtype SearchListItemType: SearchResultsListItem where SearchListItemType.Parent == Self
     
-    /// A bound String for the viewModel to use to search - optional - if set, the viewModel can fire off search requests for every keystroke
+    /// A bound String for the viewModel to use to search - optional - if set, the viewModel will receive every every keystroke
     var searchTerm: Binding<String> { get }
     
     /// The search scope selected by the user

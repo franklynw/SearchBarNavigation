@@ -19,8 +19,8 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     internal var searchViewBackgroundColor: Color?
     internal var otherResultsSectionTitle: String?
     internal var resultsSectionTitle: String?
-    internal var otherResultsEmptyView: AnyView?
-    internal var resultsEmptyView: AnyView?
+    internal var otherResultsEmptyView: (() -> AnyView)?
+    internal var resultsEmptyView: (() -> AnyView)?
     internal var searchResultsHeadersColor: Color?
     internal var searchResultsTextColor: Color?
     internal var maxOtherResults: Int = .max
@@ -81,7 +81,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         
         if let otherResults = viewModel.otherResults {
             if otherResults.isEmpty {
-                otherResultsEmptyView
+                otherResultsEmptyView?()
                     .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .listRowBackground(Color(.clear))
             } else {
@@ -103,7 +103,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         
         if let searchResults = viewModel.searchResults {
             if searchResults.isEmpty {
-                resultsEmptyView
+                resultsEmptyView?()
                     .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .listRowBackground(Color(.clear))
             } else {
