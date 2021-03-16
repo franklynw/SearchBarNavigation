@@ -415,6 +415,6 @@ There is also a PlainNavigation view, which offers the same customisation option
 It all seems to work well, but there are probably still bugs... If anyone can suggest a better way of doing what I've done for the navBar background image (in NavigationConfiguring - setBackgroundImage) I'd really like to hear!
 
 
-## License  
+## Licence  
 
-`SearchBarNavigation` is available under the MIT license
+`SearchBarNavigation` is available under the MIT licence.

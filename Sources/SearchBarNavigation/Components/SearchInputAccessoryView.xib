@@ -13,6 +13,10 @@
             <rect key="frame" x="0.0" y="0.0" width="389" height="44"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hkh-Nb-xuC">
+                    <rect key="frame" x="0.0" y="0.0" width="389" height="44"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kIF-dz-30q">
                     <rect key="frame" x="12" y="22" width="0.0" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -46,11 +50,15 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="hkh-Nb-xuC" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="0iY-9g-nv9"/>
                 <constraint firstItem="Ip8-ze-M5r" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="6" id="46d-5y-MrD"/>
+                <constraint firstAttribute="bottom" secondItem="hkh-Nb-xuC" secondAttribute="bottom" id="7ck-Yt-isD"/>
+                <constraint firstAttribute="trailing" secondItem="hkh-Nb-xuC" secondAttribute="trailing" id="Ae4-u5-T31"/>
                 <constraint firstItem="9FG-fU-GVU" firstAttribute="leading" secondItem="z4v-I7-pvz" secondAttribute="trailing" constant="12" id="BTL-dG-kP3"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="z4v-I7-pvz" secondAttribute="bottom" constant="6" id="CI6-JU-90H"/>
                 <constraint firstItem="kIF-dz-30q" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="Mwd-pG-Qgv"/>
                 <constraint firstItem="9FG-fU-GVU" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="OKf-1X-LaW"/>
+                <constraint firstItem="hkh-Nb-xuC" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="PF8-iO-b4B"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="9FG-fU-GVU" secondAttribute="bottom" constant="9" id="Rew-3c-doc"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Ip8-ze-M5r" secondAttribute="bottom" constant="6" id="a8C-pQ-sWI"/>
                 <constraint firstItem="Ip8-ze-M5r" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="gJQ-ig-yXB"/>
@@ -64,12 +72,13 @@
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="coloredBackgroundView" destination="hkh-Nb-xuC" id="ALi-Cb-fgv"/>
                 <outlet property="keyboardDismissButton" destination="9FG-fU-GVU" id="Z3L-ga-nY4"/>
                 <outlet property="leadingButtonsStackView" destination="Ip8-ze-M5r" id="S0f-lH-vYz"/>
                 <outlet property="titleLabel" destination="kIF-dz-30q" id="HqD-VT-GNg"/>
                 <outlet property="trailingButtonsStackView" destination="z4v-I7-pvz" id="M2H-73-O0w"/>
             </connections>
-            <point key="canvasLocation" x="205.3125" y="-109.375"/>
+            <point key="canvasLocation" x="205.3125" y="-110"/>
         </view>
     </objects>
     <resources>
