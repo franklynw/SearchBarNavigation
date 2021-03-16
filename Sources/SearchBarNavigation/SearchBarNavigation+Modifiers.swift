@@ -161,6 +161,14 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// A very basic implementation of pull-to-refresh, which at least allows you to trigger a reload on pull. Not great, but unitl Apple give us a proper implementation it'll have to do
+    /// - Parameter pullToRefresh: action to invoke when pulled
+//    public func pullToRefresh(_ pullToRefresh: @escaping (@escaping () -> ()) -> ()) -> Self {
+//        var copy = self
+//        copy.pullToRefresh = pullToRefresh
+//        return copy
+//    }
+    
     /// If the viewModel has previous results, show them when the user taps the search field
     public var showLastResultsOnActivate: Self {
         var copy = self

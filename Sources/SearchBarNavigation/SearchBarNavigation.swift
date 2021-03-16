@@ -35,6 +35,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
+//    internal var pullToRefresh: ((@escaping () -> ()) -> ())?
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
     

@@ -26,6 +26,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
+//    internal var pullToRefresh: ((@escaping () -> ()) -> ())?
     
     internal var finished: (() -> ())?
     
@@ -40,6 +41,14 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         ZStack {
             
             searchViewBackgroundColor
+            
+//            if let pullToRefresh = pullToRefresh {
+//                // A very hacky & not great implementation of pull-to-refresh, but until Apple give us a proper version...
+//                VStack {
+//                    PullToRefreshView(pullToRefreshOffset: $viewModel.pullToRefreshOffset, action: pullToRefresh)
+//                    Spacer()
+//                }
+//            }
             
             List {
                 
@@ -148,6 +157,74 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     Spacer()
                 }
             }
+        }
+    }
+}
+
+
+public struct PullToRefreshPreferenceKey: PreferenceKey {
+    
+    public static var defaultValue: [CGFloat] = [0]
+    
+    public static func reduce(value: inout [CGFloat], nextValue: () -> [CGFloat]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+
+struct PullToRefreshView: View {
+    
+    @Binding var pullToRefreshOffset: CGFloat
+    @State var isRefreshing = false
+    let action: (@escaping () -> ()) -> ()
+    
+    var body: some View {
+        
+        ZStack {
+            Color.clear
+            
+            if pullToRefreshOffset < 40 {
+                Spinner(percentage: pullToRefreshOffset / 40)
+            } else {
+                ProgressView()
+                performAction()
+            }
+        }
+        .frame(height: 40)
+        .opacity(Double(max(min(pullToRefreshOffset / 40, 1), 0)))
+    }
+    
+    func performAction() -> EmptyView {
+        
+        guard !isRefreshing else {
+            return EmptyView()
+        }
+        
+        action {
+            DispatchQueue.main.async {
+                isRefreshing = false
+            }
+        }
+        return EmptyView()
+    }
+    
+    struct Spinner: View {
+        
+        var percentage: CGFloat
+        
+        var body: some View {
+            
+            ForEach(1...8, id: \.self) {
+                Rectangle()
+                    .fill(Color.gray)
+                    .cornerRadius(1)
+                    .frame(width: 2.5, height: 6.5)
+                    .opacity(percentage * 8 >= CGFloat($0) ? Double($0) / 8 : 0)
+                    .offset(x: 0, y: -3.5)
+                    .rotationEffect(.degrees(Double(45 * $0)), anchor: .bottom)
+            }
+            .offset(y: -3.5)
+            .frame(width: 40, height: 40)
         }
     }
 }

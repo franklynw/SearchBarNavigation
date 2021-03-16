@@ -36,6 +36,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchResultsView.maxOtherResults = parent.maxOtherResults
         searchResultsView.maxResults = parent.maxResults
         searchResultsView.itemSelected = parent.itemSelected
+//        searchResultsView.pullToRefresh = parent.pullToRefresh
         
         searchResultsView.finished = {
             searchResultsController?.dismiss(animated: true, completion: nil)

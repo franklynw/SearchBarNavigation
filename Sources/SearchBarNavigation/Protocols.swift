@@ -33,6 +33,8 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// Other results from the viewModel, eg, Recents - optional, should be @Published
     var otherResults: [SearchListItemType.Content]? { get }
     
+    var pullToRefreshOffset: CGFloat { get set  }
+    
     /// Called when the user selects from the list of results - optional
     func searchItemWasSelected(_ item: SearchListItemType.Content)
     
@@ -60,6 +62,11 @@ public extension SearchBarShowing {
     
     var otherResults: [SearchListItemType.Content]? {
         return nil
+    }
+    
+    var pullToRefreshOffset: CGFloat {
+        set {}
+        get { 0 }
     }
     
     func searchItemWasSelected(_ item: SearchListItemType.Content) {
