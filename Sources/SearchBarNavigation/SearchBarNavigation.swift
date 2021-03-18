@@ -37,6 +37,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var itemSelected: ((String) -> ())?
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
+    internal var becomeFirstResponder: Published<Bool>.Publisher?
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {

@@ -174,4 +174,12 @@ extension SearchBarNavigation {
         copy.cancelsSearchOnKeyboardDismiss = true
         return copy
     }
+    
+    /// Programmatically bring up the search results, with the search textField active
+    /// - Parameter becomeFirstResponder: a published Bool value
+    public func becomeFirstResponder(_ becomeFirstResponder: Published<Bool>.Publisher) -> Self {
+        var copy = self
+        copy.becomeFirstResponder = becomeFirstResponder
+        return copy
+    }
 }

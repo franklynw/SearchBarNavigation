@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import ButtonConfig
 import FWMenu
 
@@ -16,6 +17,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     
     let rootViewController: UIHostingController<Content>
     let searchController: UISearchController
+    
+    private var subscriptions = Set<AnyCancellable>()
     
     
     init(_ parent: SearchBarNavigation<T, Content>) {
@@ -54,6 +57,14 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         rootViewController = UIHostingController(rootView: parent.content())
         
         super.init()
+        
+        parent.becomeFirstResponder?
+            .sink {
+                if $0 {
+                    searchController.searchBar.searchTextField.becomeFirstResponder()
+                }
+            }
+            .store(in: &subscriptions)
         
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.autocorrectionType = .no
