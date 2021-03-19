@@ -28,10 +28,7 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     var isSearching: Bool { get }
     
     /// The results obtained by the viewModel - should be @Published
-    var searchResults: [SearchListItemType.Content]? { get }
-    
-    /// Other results from the viewModel, eg, Recents - optional, should be @Published
-    var otherResults: [SearchListItemType.Content]? { get }
+    var searchResults: [SearchResultsSection<SearchListItemType.Content>]? { get }
     
     /// Called when the user selects from the list of results - optional
     func searchItemWasSelected(_ item: SearchListItemType.Content)
@@ -56,10 +53,6 @@ public extension SearchBarShowing {
     
     var isSearching: Bool {
         return false
-    }
-    
-    var otherResults: [SearchListItemType.Content]? {
-        return nil
     }
     
     func searchItemWasSelected(_ item: SearchListItemType.Content) {
@@ -87,8 +80,9 @@ public protocol SearchResultsListItem: View {
     ///   - parentViewModel: the viewModel for the parent view
     ///   - content: the content of the item
     ///   - textColor: an optional Color for the item
+    ///   - backgroundColor: an optional background Color for the item
     ///   - select: an optional closure which the item can invoke if necessary
-    init(parentViewModel: Parent, content: Content, textColor: Color?, select: ((String) -> ())?)
+    init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?, select: ((String) -> ())?)
 }
 
 
@@ -97,7 +91,7 @@ extension Text: SearchResultsListItem {
     public typealias Parent = EmptyParentViewModel
     public typealias Content = String
     
-    public init(parentViewModel: Parent, content: Content, textColor: Color?, select: ((String) -> ())?) {
+    public init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?, select: ((String) -> ())?) {
         self = Text(content)
     }
 }

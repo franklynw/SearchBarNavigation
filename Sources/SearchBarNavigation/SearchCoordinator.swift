@@ -30,14 +30,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         var searchResultsView = SearchResultsView(parent.viewModel)
         
         searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
-        searchResultsView.otherResultsSectionTitle = parent.otherResultsSectionTitle
-        searchResultsView.resultsSectionTitle = parent.resultsSectionTitle
-        searchResultsView.otherResultsEmptyView = parent.otherResultsEmptyView
-        searchResultsView.resultsEmptyView = parent.resultsEmptyView
         searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
         searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
-        searchResultsView.maxOtherResults = parent.maxOtherResults
-        searchResultsView.maxResults = parent.maxResults
         searchResultsView.itemSelected = parent.itemSelected
         
         searchResultsView.finished = {

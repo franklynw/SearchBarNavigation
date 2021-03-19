@@ -20,6 +20,8 @@ In Xcode:
 
 > **NB:** All examples require `import SearchBarNavigation` at the top of the source file
 
+To use SearchBarNavigation, your viewModel must implement SearchBarShowing. The only required field for the implementation is the searchResults, and you must set the SearchListItemType typealias.
+
 This example is using a custom content type, so it can display icons as well as the search text (requires Combine as well) -
 
 ```swift
@@ -29,8 +31,7 @@ class MainViewModel: SearchBarShowing {
     
     private var subscriptions = Set<AnyCancellable>()
     
-    @Published var searchResults: [SearchItemInfo] = [] // array of SearchListItemType.Content
-    @Published var otherResults: [SearchItemInfo] = [] // array of SearchListItemType.Content
+    @Published var searchResults: [SearchResultsSection<SearchItemInfo>] = []
     @Published var selectedSearchTerm = ""
     
     private var _searchTerm: String = ""
@@ -43,10 +44,9 @@ class MainViewModel: SearchBarShowing {
                 
                 if self._searchTerm.isEmpty {
                     self.searchResults = []
-                    self.otherResults = []
                 } else {
                     self.fetchSearchResults(using: self._searchTerm) {
-                        self.searchResults = $0
+                        self.searchResults = self.buildSearchResults(using: $0)
                     }
                 }
             }
@@ -62,6 +62,14 @@ class MainViewModel: SearchBarShowing {
             .store(in: &subscriptions)
             
             otherResults = ...
+    }
+    
+    private func buildSearchResults(using results: [SearchItemInfo]) -> [SearchResultsSection<SearchItemInfo>] {
+    
+        let viewConfig: SearchResultsSection<SearchItemInfo>.ViewConfig = .init(resultsEmptyView: someViewForEmptyResults())
+        let section = SearchResultsSection<SearchItemInfo>(title: "What we found:", results: results, viewConfig: viewConfig)
+        
+        return [section]
     }
 }
 
@@ -90,7 +98,7 @@ struct SearchItem: View, SearchBarListItem {
     private let content: SearchItemInfo
     private let textColor: Color
     
-    init(parentViewModel: RecipesViewModel, content: SearchItemInfo, textColor: Color?, select: ((String) -> ())?) {
+    init(parentViewModel: RecipesViewModel, content: SearchItemInfo, textColor: Color?, backgroundColor: Color?, select: ((String) -> ())?) {
         self.content = content
         self.textColor = textColor ?? Color(.label)
     }
@@ -150,7 +158,7 @@ SearchBarNavigation(viewModel)
 
 ### Translucent background
 
-Set this so you can see the content below the navigation bar. Note that if you set a background colour for the title, unless that colour has an alpha component of less than 1, the bar will appear opaque.
+Set this so you can see the content below the navigation bar. Note that if you set a background colour for the bar, unless that colour has an alpha component of less than 1, the bar will appear opaque.
 
 ```swift
 SearchBarNavigation(viewModel)
@@ -204,7 +212,7 @@ SearchBarNavigation(viewModel)
 
 ### The SearchView background colour
 
-Set the background colour for the whole search results view.
+Set the (global) background colour for the whole search results view - this will be overridden if you provide a backgroundColor in the ViewConfig in the searchResults section.
 
 ```swift
 SearchBarNavigation(viewModel)
@@ -213,7 +221,7 @@ SearchBarNavigation(viewModel)
 
 ### The search results headers colour
 
-Set the colour of the headers for the results sections.
+Set the (global) colour of the headers for the results sections - this will be overridden if you provide a headerColor in the ViewConfig in the searchResults section.
 
 ```swift
 SearchBarNavigation(viewModel)
@@ -222,29 +230,11 @@ SearchBarNavigation(viewModel)
 
 ### The search results text colour
 
-Set the colour of the text in the search results view.
+Set the (global) colour of the text in the search results view - this will be overridden if you provide a textColor in the ViewConfig in the searchResults section.
 
 ```swift
 SearchBarNavigation(viewModel)
     .searchResultsTextColor(Color(.darkText))
-```
-
-### Other Results section title
-
-Sets the title of the other section of the results - if not used, will default to "Recents".
-
-```swift
-SearchBarNavigation(viewModel)
-    .otherResultsSectionTitle("Recently viewed items -")
-```
-
-### Results section title
-
-Sets the title of the "Results" section of the results - if not used, will default to "Results".
-
-```swift
-SearchBarNavigation(viewModel)
-    .resultsSectionTitle("Search results -")
 ```
 
 ### Cancel button colour
@@ -254,54 +244,6 @@ The colour to use for the Cancel button - defaults to Color(.link) if unused.
 ```swift
 SearchBarNavigation(viewModel)
     .cancelButtonColor(.red)
-```
-
-### Maximum number of other results
-
-The maximum number of rows to show in the recents section - defaults to unlimited if unused.
-
-```swift
-SearchBarNavigation(viewModel)
-    .maxOtherResults(5)
-```
-
-### Maximum number of search results
-
-The maximum number of rows to show in the results section - defaults to unlimited if unused.
-
-```swift
-SearchBarNavigation(viewModel)
-    .maxResults(5)
-```
-
-### Views to display in the event of no results
-
-You can display custom views in the event of no results being returned.
-
-```swift
-SearchBarNavigation(viewModel)
-    .resultsEmptyView {
-        HStack(alignment: .bottom) {
-            Image("EmptyGlass", bundle: nil)
-            Text("We couldn't find anything to match your search")
-                .font(.subheadline)
-        }
-        .background(Color.clear)
-    }
-```
-
-or -
-
-```swift
-SearchBarNavigation(viewModel)
-    .otherResultsEmptyView {
-        HStack(alignment: .bottom) {
-            Image("EmptyGlass", bundle: nil)
-            Text("We couldn't find anything to match your search")
-                .font(.subheadline)
-        }
-        .background(Color.clear)
-    }
 ```
 
 ### Additional action if a search result item is selected
@@ -332,6 +274,24 @@ When you tap the keyboard dismiss button in the inputAccessoryView (if configure
 SearchBarNavigation(viewModel)
     .cancelSearchOnKeyboardDismiss
 ```
+
+
+## SearchResultsSection
+
+This is the struct you use to contain the search results - one section for each king, eg, one for recents, another for server, etc. It requires a title & an array of results, plus optional max results to show & ViewConfig.
+
+```swift
+public init(title: String, results: [Content], maxShown: Int = .max, viewConfig: ViewConfig? = nil)
+```
+The maximum number of rows to show defaults to unlimited if unused.
+
+The ViewConfig struct is self-explanatory, & allows you to customise the appearance of the results. Although you specify the customisation, it is up to you to implement it in the search results items' views.
+
+```swift
+public init(headerColor: Color? = nil, textColor: Color? = nil, backgroundColor: Color? = nil, resultsEmptyView: (() -> AnyView)? = nil)
+```
+
+The resultsEmptyView parameter allows you to provide custom views in the event of no results being returned.
 
 
 ## NavigationBarStyle

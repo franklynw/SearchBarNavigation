@@ -24,16 +24,10 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var barButtons: BarButtons?
     internal var searchFieldButton: BarButton?
     internal var searchInputAccessory: SearchInputAccessory?
-    internal var otherResultsSectionTitle: String?
-    internal var resultsSectionTitle: String?
-    internal var otherResultsEmptyView: (() -> AnyView)?
-    internal var resultsEmptyView: (() -> AnyView)?
     internal var searchResultsHeadersColor: Color?
     internal var searchResultsTextColor: Color?
     internal var searchViewBackgroundColor: Color?
     internal var cancelButtonColor: Color?
-    internal var maxOtherResults: Int = .max
-    internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
