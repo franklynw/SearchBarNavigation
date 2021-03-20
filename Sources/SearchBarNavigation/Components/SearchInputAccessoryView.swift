@@ -12,6 +12,7 @@ import ButtonConfig
 
 class SearchInputAccessoryView: UIView {
     
+    @IBOutlet weak var coloredBackgroundView: UIView!
     @IBOutlet weak var leadingButtonsStackView: UIStackView!
     @IBOutlet weak var trailingButtonsStackView: UIStackView!
     @IBOutlet weak var titleLabel: UILabel!
@@ -51,13 +52,13 @@ class SearchInputAccessoryView: UIView {
             addButtons(leadingButtons, to: view.leadingButtonsStackView)
             addButtons(trailingButtons, to: view.trailingButtonsStackView)
             configureKeyboardDismissButton(keyboardDismissButtonConfig)
-            view.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
+            view.coloredBackgroundView.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
             
         case .title(let title, let keyboardDismissButtonConfig, let backgroundColor):
         
             title.applyToLabel(view.titleLabel)
             configureKeyboardDismissButton(keyboardDismissButtonConfig)
-            view.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
+            view.coloredBackgroundView.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
             
         case .textWithButton(let textPublisher, let buttonConfig, let keyboardDismissButtonConfig, let backgroundColor):
             
@@ -65,7 +66,7 @@ class SearchInputAccessoryView: UIView {
             button.tintColor = buttonColor
             view.trailingButtonsStackView.addArrangedSubview(button)
             configureKeyboardDismissButton(keyboardDismissButtonConfig)
-            view.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
+            view.coloredBackgroundView.backgroundColor = UIColor(backgroundColor ?? Color(.systemBackground))
             
             view.textPublisher = textPublisher
                 .sink {

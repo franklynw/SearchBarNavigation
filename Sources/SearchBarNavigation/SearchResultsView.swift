@@ -43,20 +43,18 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
             
             List {
                 
-                if viewModel.otherResults?.isEmpty == false || otherResultsEmptyView != nil {
-                    Section(header: ListHeader(color: searchResultsHeadersColor, text: otherResultsSectionTitle ?? NSLocalizedString("Recents", bundle: Bundle.module, comment: "Recents"))) {
-                        recentItems()
+                if let searchResults = viewModel.searchResults {
+                    
+                    ForEach(searchResults.sections) { section in
+                        // show header if - we got results or (there's a resultsEmptyView and the empty results have returned)
+                        if !section.results.isEmpty || (section.viewConfig?.resultsEmptyView?() != nil && section.hasReceivedContent) {
+                            Section(header: ListHeader(header: section.header.withFallbackColor(searchResultsHeadersColor))) {
+                                items(for: section)
+                            }
+                            .textCase(nil)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        }
                     }
-                    .textCase(nil)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                }
-                
-                if viewModel.searchResults?.isEmpty == false || resultsEmptyView != nil {
-                    Section(header: ListHeader(color: searchResultsHeadersColor, text: resultsSectionTitle ?? NSLocalizedString("Results", bundle: Bundle.module, comment: "Results"))) {
-                        resultsItems()
-                    }
-                    .textCase(nil)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                 }
             }
             .opacity(opacity)
@@ -77,46 +75,24 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     }
     
     @ViewBuilder
-    private func recentItems() -> some View {
+    private func items(for section: SearchResultsSection<T.SearchListItemType.Content>) -> some View {
         
-        if let otherResults = viewModel.otherResults {
-            if otherResults.isEmpty {
-                otherResultsEmptyView?()
+        if section.results.isEmpty {
+            if section.hasReceivedContent {
+                section.viewConfig?.resultsEmptyView?()
                     .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .listRowBackground(Color(.clear))
-            } else {
-                ForEach(otherResults.prefix(maxOtherResults), id: \.self) { item in
-                    T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: searchResultsTextColor ?? Color(.label), select: itemSelected)
-                        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            finish(item)
-                        }
-                }
-                .listRowBackground(Color(.clear))
             }
-        }
-    }
-    
-    @ViewBuilder
-    private func resultsItems() -> some View {
-        
-        if let searchResults = viewModel.searchResults {
-            if searchResults.isEmpty {
-                resultsEmptyView?()
+        } else {
+            ForEach(section.results.prefix(section.maxShown), id: \.self) { item in
+                T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor, select: itemSelected)
                     .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                    .listRowBackground(Color(.clear))
-            } else {
-                ForEach(searchResults.prefix(maxResults), id: \.self) { item in
-                    T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: searchResultsTextColor ?? Color(.label), select: itemSelected)
-                        .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            finish(item)
-                        }
-                }
-                .listRowBackground(Color(.clear))
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        finish(item)
+                    }
             }
+            .listRowBackground(Color(.clear))
         }
     }
     
@@ -132,20 +108,30 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     
     struct ListHeader: View {
         
-        var color: Color?
-        var text: String
+        let header: SearchResultsSection<T.SearchListItemType.Content>.Header
         
         var body: some View {
             
             ZStack {
-                color
+                
+                header.color
                 
                 HStack {
-                    Text(text)
+                    Text(header.title)
                         .font(.caption)
+                        .foregroundColor(header.textColor)
                         .padding(.leading, 16)
                     
                     Spacer()
+                    
+                    if let button = header.button {
+                        Button(action: button.action) {
+                            Text(button.title)
+                                .font(Font.caption.weight(.semibold))
+                                .foregroundColor(header.textColor)
+                                .padding(.trailing, 16)
+                        }
+                    }
                 }
             }
         }

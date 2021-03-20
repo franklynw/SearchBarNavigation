@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import ButtonConfig
 import FWMenu
 
@@ -17,6 +18,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     let rootViewController: UIHostingController<Content>
     let searchController: UISearchController
     
+    private var subscriptions = Set<AnyCancellable>()
+    
     
     init(_ parent: SearchBarNavigation<T, Content>) {
         
@@ -27,14 +30,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         var searchResultsView = SearchResultsView(parent.viewModel)
         
         searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
-        searchResultsView.otherResultsSectionTitle = parent.otherResultsSectionTitle
-        searchResultsView.resultsSectionTitle = parent.resultsSectionTitle
-        searchResultsView.otherResultsEmptyView = parent.otherResultsEmptyView
-        searchResultsView.resultsEmptyView = parent.resultsEmptyView
         searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
         searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
-        searchResultsView.maxOtherResults = parent.maxOtherResults
-        searchResultsView.maxResults = parent.maxResults
         searchResultsView.itemSelected = parent.itemSelected
         
         searchResultsView.finished = {
@@ -42,7 +39,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
             searchController.searchBar.text = ""
         }
         
-        searchResultsController = UIHostingController(rootView: searchResultsView)
+        searchResultsController = SearchHostingController(rootView: searchResultsView, showPreviousResults: parent.showsLastResultsOnActivate)
         searchController = UISearchController(searchResultsController: searchResultsController)
         
         if let cancelButtonColor = parent.cancelButtonColor {
@@ -54,6 +51,14 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         rootViewController = UIHostingController(rootView: parent.content())
         
         super.init()
+        
+        parent.becomeFirstResponder?
+            .sink {
+                if $0 {
+                    searchController.searchBar.searchTextField.becomeFirstResponder()
+                }
+            }
+            .store(in: &subscriptions)
         
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.autocorrectionType = .no
@@ -170,7 +175,10 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         
         let buttonColor: UIColor = parent.cancelButtonColor != nil ? UIColor(parent.cancelButtonColor!) : .label
         let accessoryView = searchInputAccessory.view(buttonColor: buttonColor, dismissKeyboard: { [weak self] in
-            self?.cancelSearch()
+            if self?.parent.cancelsSearchOnKeyboardDismiss == true {
+                self?.cancelSearch()
+            }
+            UIApplication.shared.endEditing()
         })
         
         searchController.searchBar.inputAccessoryView = accessoryView
@@ -184,5 +192,47 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     private func searchWasCancelled() {
         parent.viewModel.searchTerm.wrappedValue = ""
         parent.viewModel.searchCancelled()
+    }
+}
+
+
+private var hiddenKey: UInt8 = 0
+
+class SearchHostingController<Content: View>: UIHostingController<Content> {
+    
+    private let showPreviousResults: Bool
+    
+    init(rootView: Content, showPreviousResults: Bool) {
+        
+        self.showPreviousResults = showPreviousResults
+        
+        super.init(rootView: rootView)
+        
+        if showPreviousResults {
+            view.addObserver(self, forKeyPath: "hidden", options: [.new, .old], context: &hiddenKey)
+        }
+    }
+    
+    @objc required dynamic init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    deinit {
+        if showPreviousResults {
+            view.removeObserver(self, forKeyPath: "hidden")
+        }
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if context == &hiddenKey {
+            if let changed = change?[.newKey] as? NSNumber, changed.boolValue {
+                view.isHidden = false
+            }
+        } else {
+            if super.responds(to: #selector(observeValue(forKeyPath:of:change:context:))) {
+                super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+            }
+        }
     }
 }

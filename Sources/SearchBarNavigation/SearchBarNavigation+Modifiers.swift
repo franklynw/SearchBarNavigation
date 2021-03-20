@@ -97,38 +97,6 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// Sets the title of the "Results" section of the results - if not used, will default to "Results"
-    /// - Parameter resultsSectionTitle: a String
-    public func resultsSectionTitle(_ resultsSectionTitle: String) -> Self {
-        var copy = self
-        copy.resultsSectionTitle = resultsSectionTitle
-        return copy
-    }
-    
-    /// Sets the title of the Other section of the results - if not used, will default to "Recents"
-    /// - Parameter otherResultsSectionTitle: a String
-    public func otherResultsSectionTitle(_ otherResultsSectionTitle: String) -> Self {
-        var copy = self
-        copy.otherResultsSectionTitle = otherResultsSectionTitle
-        return copy
-    }
-    
-    /// The view to display if the other results are empty
-    /// - Parameter otherResultsEmptyView: a view
-    public func otherResultsEmptyView<T: View>(@ViewBuilder _ otherResultsEmptyView: @escaping () -> T) -> Self {
-        var copy = self
-        copy.otherResultsEmptyView = { AnyView(otherResultsEmptyView()) }
-        return copy
-    }
-    
-    /// The view to display if the results are empty
-    /// - Parameter resultsEmptyView: a view
-    public func resultsEmptyView<T: View>(@ViewBuilder _ resultsEmptyView: @escaping () -> T) -> Self {
-        var copy = self
-        copy.resultsEmptyView = { AnyView(resultsEmptyView()) }
-        return copy
-    }
-    
     /// The colour to use for the Cancel button - defaults to Color(.link) if unused
     /// - Parameter cancelButtonColor: a Color
     public func cancelButtonColor(_ cancelButtonColor: Color) -> Self {
@@ -137,27 +105,33 @@ extension SearchBarNavigation {
         return copy
     }
     
-    /// The maximum number of rows to show in the other section - defaults to 3 if unused
-    /// - Parameter maxOtherResults: an Int value
-    public func maxOtherResults(_ maxOtherResults: Int) -> Self {
-        var copy = self
-        copy.maxOtherResults = maxOtherResults
-        return copy
-    }
-    
-    /// The maximum number of rows to show in the results section - defaults to unlimited if unused
-    /// - Parameter maxResults: an Int value
-    public func maxResults(_ maxResults: Int) -> Self {
-        var copy = self
-        copy.maxResults = maxResults
-        return copy
-    }
-    
     /// Closure which can be invoked by a search item
     /// - Parameter itemSelected: the closure which will be invoked
     public func itemSelected(_ itemSelected: @escaping (String) -> ()) -> Self {
         var copy = self
         copy.itemSelected = itemSelected
+        return copy
+    }
+    
+    /// If the viewModel has previous results, show them when the user taps the search field
+    public var showLastResultsOnActivate: Self {
+        var copy = self
+        copy.showsLastResultsOnActivate = true
+        return copy
+    }
+    
+    /// Cancel the search when dismissing the keyboard (default behaviour is to leave the results view showing)
+    public var cancelSearchOnKeyboardDismiss: Self {
+        var copy = self
+        copy.cancelsSearchOnKeyboardDismiss = true
+        return copy
+    }
+    
+    /// Programmatically bring up the search results, with the search textField active
+    /// - Parameter becomeFirstResponder: a published Bool value
+    public func becomeFirstResponder(_ becomeFirstResponder: Published<Bool>.Publisher) -> Self {
+        var copy = self
+        copy.becomeFirstResponder = becomeFirstResponder
         return copy
     }
 }
