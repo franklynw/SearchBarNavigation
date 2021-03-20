@@ -45,10 +45,10 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                 
                 if let searchResults = viewModel.searchResults {
                     
-                    ForEach(searchResults) { section in
-                        
-                        if !(section.results.isEmpty && section.viewConfig?.resultsEmptyView?() == nil) {
-                            Section(header: ListHeader(color: section.viewConfig?.headerColor ?? searchResultsHeadersColor, text: section.title)) {
+                    ForEach(searchResults.sections) { section in
+                        // show header if - we got results or (there's a resultsEmptyView and the empty results have returned)
+                        if !section.results.isEmpty || (section.viewConfig?.resultsEmptyView?() != nil && section.hasReceivedContent) {
+                            Section(header: ListHeader(header: section.header.withFallbackColor(searchResultsHeadersColor))) {
                                 items(for: section)
                             }
                             .textCase(nil)
@@ -78,9 +78,11 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     private func items(for section: SearchResultsSection<T.SearchListItemType.Content>) -> some View {
         
         if section.results.isEmpty {
-            section.viewConfig?.resultsEmptyView?()
-                .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                .listRowBackground(Color(.clear))
+            if section.hasReceivedContent {
+                section.viewConfig?.resultsEmptyView?()
+                    .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listRowBackground(Color(.clear))
+            }
         } else {
             ForEach(section.results.prefix(section.maxShown), id: \.self) { item in
                 T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor, select: itemSelected)
@@ -106,20 +108,30 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     
     struct ListHeader: View {
         
-        var color: Color?
-        var text: String
+        let header: SearchResultsSection<T.SearchListItemType.Content>.Header
         
         var body: some View {
             
             ZStack {
-                color
+                
+                header.color
                 
                 HStack {
-                    Text(text)
+                    Text(header.title)
                         .font(.caption)
+                        .foregroundColor(header.textColor)
                         .padding(.leading, 16)
                     
                     Spacer()
+                    
+                    if let button = header.button {
+                        Button(action: button.action) {
+                            Text(button.title)
+                                .font(Font.caption.weight(.semibold))
+                                .foregroundColor(header.textColor)
+                                .padding(.trailing, 16)
+                        }
+                    }
                 }
             }
         }

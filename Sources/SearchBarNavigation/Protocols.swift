@@ -28,7 +28,7 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     var isSearching: Bool { get }
     
     /// The results obtained by the viewModel - should be @Published
-    var searchResults: [SearchResultsSection<SearchListItemType.Content>]? { get }
+    var searchResults: SearchResults<SearchListItemType.Content> { get }
     
     /// Called when the user selects from the list of results - optional
     func searchItemWasSelected(_ item: SearchListItemType.Content)

@@ -22,17 +22,16 @@ In Xcode:
 
 To use SearchBarNavigation, your viewModel must implement SearchBarShowing. The only required field for the implementation is the searchResults, and you must set the SearchListItemType typealias.
 
-This example is using a custom content type, so it can display icons as well as the search text (requires Combine as well) -
+This example is using a custom content type, so it can display icons as well as the search text -
 
 ```swift
 class MainViewModel: SearchBarShowing {
     
     typealias SearchListItemType = SearchItem
     
-    private var subscriptions = Set<AnyCancellable>()
+    @Published var searchResults = SearchResults<SearchItemInfo>()
     
-    @Published var searchResults: [SearchResultsSection<SearchItemInfo>] = []
-    @Published var selectedSearchTerm = ""
+    private var recentsResults = [SearchItemInfo]()
     
     private var _searchTerm: String = ""
     var searchTerm: Binding<String> {
@@ -43,10 +42,11 @@ class MainViewModel: SearchBarShowing {
                 self._searchTerm = $0
                 
                 if self._searchTerm.isEmpty {
-                    self.searchResults = []
+                    self.searchResults.updateSection(withIdentifier: "whatWeFound", withNewContent: [])
                 } else {
-                    self.fetchSearchResults(using: self._searchTerm) {
-                        self.searchResults = self.buildSearchResults(using: $0)
+                    self.searchResults.updateSection(withIdentifier: "recents", withNewContent: recentsResults)
+                    self.fetchSearchResults(using: self._searchTerm) { [weak self] in
+                        self?.searchResults.updateSection(withIdentifier: "whatWeFound", withNewContent: $0)
                     }
                 }
             }
@@ -54,22 +54,22 @@ class MainViewModel: SearchBarShowing {
     }
     
     init() {
-        
-        $selectedSearchTerm
-            .sink {
-                print("Selected: ", $0)
-            }
-            .store(in: &subscriptions)
-            
-            otherResults = ...
+        searchResults = initializeSearchResults()
     }
     
-    private func buildSearchResults(using results: [SearchItemInfo]) -> [SearchResultsSection<SearchItemInfo>] {
-    
-        let viewConfig: SearchResultsSection<SearchItemInfo>.ViewConfig = .init(resultsEmptyView: someViewForEmptyResults())
-        let section = SearchResultsSection<SearchItemInfo>(title: "What we found:", results: results, viewConfig: viewConfig)
+    private func initializeSearchResults() -> SearchResults<SearchItemInfo> {
         
-        return [section]
+        var sections = [SearchResultsSection<SearchItemInfo>]()
+        
+        let viewConfig: SearchResultsSection<SearchItemInfo>.ViewConfig = .init(resultsEmptyView: someViewForEmptyResults())
+        
+        let whatWeFoundSection = SearchResultsSection<SearchItemInfo>(id: "whatWeFound", title: "What we found:", results: [], viewConfig: viewConfig)
+        sections.append(whatWeFoundSection)
+        
+        let recentsSection = SearchResultsSection<SearchItemInfo>(id: "recents", header: .init(title: "Recently viewed:", button: .init(title: "Clear recents", action: clearRecents)), results: [], viewConfig: viewConfig)
+        sections.append(recentsSection)
+        
+        return SearchResults(sections)
     }
 }
 
@@ -120,10 +120,6 @@ struct SearchItemInfo {
     init(_ name: String, _ systemImageName: String) {
         self.name = name
         self.systemImageName = systemImageName
-    }
-    
-    var searchTerm: String {
-        return name
     }
 }
 ```
@@ -276,22 +272,74 @@ SearchBarNavigation(viewModel)
 ```
 
 
-## SearchResultsSection
+## SearchResults & SearchResultsSection
 
-This is the struct you use to contain the search results - one section for each king, eg, one for recents, another for server, etc. It requires a title & an array of results, plus optional max results to show & ViewConfig.
+These are the structs you use to contain the search results. The SearchResults contains SearchResultsSection items - one section for each kind, eg, one for recents, another for server, etc.
+
+The SearchResults can be initialised with an empty initialiser - init() - or with sections -
 
 ```swift
-public init(title: String, results: [Content], maxShown: Int = .max, viewConfig: ViewConfig? = nil)
+init(_ sections: [SearchResultsSection<Content>])
 ```
-The maximum number of rows to show defaults to unlimited if unused.
 
-The ViewConfig struct is self-explanatory, & allows you to customise the appearance of the results. Although you specify the customisation, it is up to you to implement it in the search results items' views.
+When the searchResults var is updated, the search results content will update automatically.
+
+The SearchResultsSection has two initialisers, each requires an array of results -
 
 ```swift
-public init(headerColor: Color? = nil, textColor: Color? = nil, backgroundColor: Color? = nil, resultsEmptyView: (() -> AnyView)? = nil)
+public init(id: String, title: String, results: [Content], maxShown: Int, viewConfig: ViewConfig?)
+```
+
+or
+
+```swift
+public init(id: String, header: Header, results: [Content], maxShown: Int, viewConfig: ViewConfig?)
+```
+
+* The optional id parameter allows you to update content using that id to reference the section.
+* The maximum number of rows to show defaults to unlimited if unused.
+* The second intialiser allows more customisation of the section header, via the Header struct.
+* The ViewConfig struct is self-explanatory, & allows you to customise the appearance of the results. Although you specify the customisation, it is up to you to implement it in the search results items' views.
+
+For setting and updating your search results, the SearchResultsSection provides the following -
+
+* Replace the content in a section
+```swift
+mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content])
+```
+
+* Append the content in a section
+```swift
+mutating func appendSection(withIdentifier identifier: String, withAdditionContent content: [Content])
+```
+
+* You can also get a section from the search results -
+
+```swift
+func section(forIdentifier identifier: String) -> SearchResultsSection<Content>?
+```
+
+* Clear the content from a section - 
+
+```swift
+mutating func clearSections(withIdentifiers identifiers: [String]?)
+```
+
+### SearchResultsSection.ViewConfig
+
+```swift
+public init(textColor: Color?, backgroundColor: Color?, resultsEmptyView: (() -> AnyView)?)
 ```
 
 The resultsEmptyView parameter allows you to provide custom views in the event of no results being returned.
+
+### SearchResultsSection.Header
+
+```swift
+init(title: String, color: Color?, textColor: Color?, button: Button?)
+```
+
+You can set its text & background colours, and add a button (which will appear in the right of the header).
 
 
 ## NavigationBarStyle
