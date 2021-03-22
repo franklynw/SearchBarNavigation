@@ -127,6 +127,13 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// Disable the animations when the search results change
+    public var disableResultsChangedAnimations: Self {
+        var copy = self
+        copy.disablesResultsChangedAnimations = true
+        return copy
+    }
+    
     /// Programmatically bring up the search results, with the search textField active
     /// - Parameter becomeFirstResponder: a published Bool value
     public func becomeFirstResponder(_ becomeFirstResponder: Published<Bool>.Publisher) -> Self {

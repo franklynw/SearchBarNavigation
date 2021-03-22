@@ -32,6 +32,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
         searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
         searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
+        searchResultsView.disablesResultsChangedAnimations = parent.disablesResultsChangedAnimations
         searchResultsView.itemSelected = parent.itemSelected
         
         searchResultsView.finished = {

@@ -271,6 +271,15 @@ SearchBarNavigation(viewModel)
     .cancelSearchOnKeyboardDismiss
 ```
 
+### Disable animations when the search results change
+
+The default behaviour is to animate resutls changes. Disable this using the modifier -
+
+```swift
+SearchBarNavigation(viewModel)
+    .disableResultsChangedAnimations
+```
+
 
 ## SearchResults & SearchResultsSection
 

@@ -95,6 +95,18 @@ public struct SearchResults<Content: Hashable>: Collection {
     }
 }
 
+extension SearchResults: Equatable {
+    
+    public static func ==(_ lhs: SearchResults, _ rhs: SearchResults) -> Bool {
+        
+        guard lhs.count == rhs.count else {
+            return false
+        }
+        
+        return zip(lhs, rhs).reduce(true) { $0 && $1.0 == $1.1 }
+    }
+}
+
 
 public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable {
     
@@ -205,5 +217,17 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     mutating func clear() {
         results.removeAll()
         hasReceivedContent = false
+    }
+}
+
+extension SearchResultsSection: Equatable {
+    
+    public static func ==(_ lhs: SearchResultsSection, _ rhs: SearchResultsSection) -> Bool {
+        
+        guard lhs.count == rhs.count else {
+            return false
+        }
+        
+        return zip(lhs, rhs).reduce(true) { $0 && $1.0 == $1.1 }
     }
 }
