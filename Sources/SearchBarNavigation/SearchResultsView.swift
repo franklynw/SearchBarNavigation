@@ -26,6 +26,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
     internal var itemSelected: ((String) -> ())?
+    internal var disablesResultsChangedAnimations = false
     
     internal var finished: (() -> ())?
     
@@ -68,6 +69,8 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     opacity = 0
                 }
             }
+            .transition(.opacity)
+            .animation(disablesResultsChangedAnimations ? nil : .linear, value: viewModel.searchResults)
             
             ProgressView()
                 .opacity(viewModel.isSearching ? 1 : 0)
@@ -91,6 +94,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     .onTapGesture {
                         finish(item)
                     }
+                    .animation(nil)
             }
             .listRowBackground(Color(.clear))
         }

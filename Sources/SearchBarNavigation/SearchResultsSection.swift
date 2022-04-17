@@ -61,19 +61,19 @@ public struct SearchResults<Content: Hashable>: Collection {
     }
     
     public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content]) {
-        guard var section = section(forIdentifier: identifier), let sectionIndex = index(ofSection: section) else {
-            return
-        }
-        section.updateResults(content)
-        sections[sectionIndex] = section
+        self[identifier]?.results = content
     }
     
-    public mutating func appendSection(withIdentifier identifier: String, withAdditionContent content: [Content]) {
-        guard var section = section(forIdentifier: identifier), let sectionIndex = index(ofSection: section) else {
-            return
-        }
-        section.appendResults(with: content)
-        sections[sectionIndex] = section
+    public mutating func appendSection(withIdentifier identifier: String, withAdditionalContent content: [Content]) {
+        self[identifier]?.results.append(contentsOf: content)
+    }
+    
+    public mutating func update(section: SearchResultsSection<Content>) {
+        self[section.id] = section
+    }
+    
+    public mutating func updateSection(withIdentifier identifier: String, atIndex index: Int, withNewContent content: Content) {
+        self[identifier]?[index] = content
     }
     
     public mutating func clearSections(withIdentifiers identifiers: [String]? = nil) {
@@ -92,6 +92,18 @@ public struct SearchResults<Content: Hashable>: Collection {
     
     private func index(ofSection section: SearchResultsSection<Content>) -> Int? {
         sections.firstIndex(where: { $0.id == section.id })
+    }
+}
+
+extension SearchResults: Equatable {
+    
+    public static func ==(_ lhs: SearchResults, _ rhs: SearchResults) -> Bool {
+        
+        guard lhs.count == rhs.count else {
+            return false
+        }
+        
+        return zip(lhs, rhs).reduce(true) { $0 && $1.0 == $1.1 }
     }
 }
 
@@ -192,18 +204,30 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
         self.viewConfig = viewConfig
     }
     
-    mutating func appendResults(with additionalItems: [Content]) {
+    public mutating func appendResults(with additionalItems: [Content]) {
         results.append(contentsOf: additionalItems)
         hasReceivedContent = true
     }
     
-    mutating func updateResults(_ results: [Content]) {
+    public mutating func updateResults(_ results: [Content]) {
         self.results = results
         hasReceivedContent = true
     }
     
-    mutating func clear() {
+    public mutating func clear() {
         results.removeAll()
         hasReceivedContent = false
+    }
+}
+
+extension SearchResultsSection: Equatable {
+    
+    public static func ==(_ lhs: SearchResultsSection, _ rhs: SearchResultsSection) -> Bool {
+        
+        guard lhs.count == rhs.count else {
+            return false
+        }
+        
+        return zip(lhs, rhs).reduce(true) { $0 && $1.0 == $1.1 }
     }
 }
