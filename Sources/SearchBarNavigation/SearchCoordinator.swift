@@ -193,6 +193,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     private func searchWasCancelled() {
         parent.viewModel.searchTerm.wrappedValue = ""
         parent.viewModel.searchCancelled()
+        parent.viewModel.searchResults.resetChangedFlags()
     }
 }
 

@@ -32,6 +32,7 @@ public struct SearchResults<Content: Hashable>: Collection {
         }
         set {
             sections[position] = newValue
+            sections[position].hasReceivedContent = true
         }
     }
     
@@ -44,6 +45,7 @@ public struct SearchResults<Content: Hashable>: Collection {
                 return
             }
             sections[position] = newValue
+            sections[position].hasReceivedContent = true
         }
     }
     
@@ -62,18 +64,22 @@ public struct SearchResults<Content: Hashable>: Collection {
     
     public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content]) {
         self[identifier]?.results = content
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func appendSection(withIdentifier identifier: String, withAdditionalContent content: [Content]) {
         self[identifier]?.results.append(contentsOf: content)
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func update(section: SearchResultsSection<Content>) {
         self[section.id] = section
+        self[section.id]?.hasReceivedContent = true
     }
     
     public mutating func updateSection(withIdentifier identifier: String, atIndex index: Int, withNewContent content: Content) {
         self[identifier]?[index] = content
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func clearSections(withIdentifiers identifiers: [String]? = nil) {
@@ -92,6 +98,12 @@ public struct SearchResults<Content: Hashable>: Collection {
     
     private func index(ofSection section: SearchResultsSection<Content>) -> Int? {
         sections.firstIndex(where: { $0.id == section.id })
+    }
+    
+    internal mutating func resetChangedFlags() {
+        for index in 0..<count {
+            sections[index].hasReceivedContent = false
+        }
     }
 }
 

@@ -30,6 +30,14 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     
     internal var finished: (() -> ())?
     
+    private var edgeInset: CGFloat {
+        if #available(iOS 15, *) {
+            return -16
+        } else {
+            return 0
+        }
+    }
+    
     
     init(_ viewModel: T) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -53,11 +61,12 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                                 items(for: section)
                             }
                             .textCase(nil)
-                            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                            .listRowInsets(EdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset))
                         }
                     }
                 }
             }
+            .padding(.bottom, 1) // weird iOS 15 bug where the results overlay the tab bar at the bottom on appearances after the initial one; this fixes it...
             .opacity(opacity)
             .onAppear {
                 withAnimation {
@@ -81,11 +90,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     private func items(for section: SearchResultsSection<T.SearchListItemType.Content>) -> some View {
         
         if section.results.isEmpty {
-            if section.hasReceivedContent {
-                section.viewConfig?.resultsEmptyView?()
-                    .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                    .listRowBackground(Color(.clear))
-            }
+            emptyResults(for: section)
         } else {
             ForEach(section.results.prefix(section.maxShown), id: \.self) { item in
                 T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor, select: itemSelected)
@@ -97,6 +102,16 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     .animation(nil)
             }
             .listRowBackground(Color(.clear))
+        }
+    }
+    
+    @ViewBuilder
+    private func emptyResults(for section: SearchResultsSection<T.SearchListItemType.Content>) -> some View {
+        
+        if section.hasReceivedContent {
+            section.viewConfig?.resultsEmptyView?()
+                .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                .listRowBackground(Color(.clear))
         }
     }
     
