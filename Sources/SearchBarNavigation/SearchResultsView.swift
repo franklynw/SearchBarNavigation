@@ -67,19 +67,8 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                 }
             }
             .padding(.bottom, 1) // weird iOS 15 bug where the results overlay the tab bar at the bottom on appearances after the initial one; this fixes it...
-            .opacity(opacity)
-            .onAppear {
-                withAnimation {
-                    opacity = 1
-                }
-            }
-            .onDisappear {
-                withAnimation {
-                    opacity = 0
-                }
-            }
-            .transition(.opacity)
-            .animation(disablesResultsChangedAnimations ? nil : .linear, value: viewModel.searchResults)
+            .opacity(viewModel.isSearching ? 0 : 1)
+            .animation(disablesResultsChangedAnimations ? nil : .easeInOut(duration: 0.2), value: viewModel.isSearching)
             
             ProgressView()
                 .opacity(viewModel.isSearching ? 1 : 0)
