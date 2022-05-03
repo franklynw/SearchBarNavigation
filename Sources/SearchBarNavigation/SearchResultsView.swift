@@ -8,13 +8,18 @@
 import SwiftUI
 
 
-struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
+public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
+    
+    public enum Select {
+        case dismissSearch(_ itemSelected: (T.SearchListItemType.Content) -> ())
+        case selectOnly(_ itemSelected: (T.SearchListItemType.Content) -> ())
+    }
     
     @StateObject private var viewModel: T
     @State private var isEditing = false
     @State private var opacity: Double = 0
     
-    let id = "SearchResultsView"
+    public let id = "SearchResultsView"
     
     internal var searchViewBackgroundColor: Color?
     internal var otherResultsSectionTitle: String?
@@ -25,7 +30,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     internal var searchResultsTextColor: Color?
     internal var maxOtherResults: Int = .max
     internal var maxResults: Int = .max
-    internal var itemSelected: ((String) -> ())?
+    internal var itemSelected: Select?
     internal var disablesResultsChangedAnimations = false
     
     internal var finished: (() -> ())?
@@ -44,7 +49,7 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     }
     
     
-    var body: some View {
+    public var body: some View {
         
         ZStack {
             
@@ -82,11 +87,11 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
             emptyResults(for: section)
         } else {
             ForEach(section.results.prefix(section.maxShown), id: \.self) { item in
-                T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor, select: itemSelected)
+                T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor)
                     .padding(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        finish(item)
+                        tapped(item)
                     }
                     .animation(nil)
             }
@@ -104,14 +109,23 @@ struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         }
     }
     
-    private func finish(_ item: T.SearchListItemType.Content) {
-
-        UIApplication.shared.endEditing()
+    private func tapped(_ item: T.SearchListItemType.Content) {
         
-        viewModel.searchItemWasSelected(item)
-        viewModel.searchTerm.wrappedValue = ""
-        
-        finished?()
+        switch itemSelected {
+        case .selectOnly(let select):
+            select(item)
+        case .dismissSearch(let select):
+            
+            UIApplication.shared.endEditing()
+            
+            viewModel.searchTerm.wrappedValue = ""
+            select(item)
+            
+            finished?()
+            
+        case .none:
+            break
+        }
     }
     
     struct ListHeader: View {

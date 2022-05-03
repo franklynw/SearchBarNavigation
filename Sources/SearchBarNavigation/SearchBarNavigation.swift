@@ -28,7 +28,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var searchResultsTextColor: Color?
     internal var searchViewBackgroundColor: Color?
     internal var cancelButtonColor: Color?
-    internal var itemSelected: ((String) -> ())?
+    internal var itemSelected: SearchResultsView<T>.Select?
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
     internal var disablesResultsChangedAnimations = false

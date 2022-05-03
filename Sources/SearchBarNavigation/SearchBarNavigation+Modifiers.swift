@@ -107,7 +107,7 @@ extension SearchBarNavigation {
     
     /// Closure which can be invoked by a search item
     /// - Parameter itemSelected: the closure which will be invoked
-    public func itemSelected(_ itemSelected: @escaping (String) -> ()) -> Self {
+    public func itemSelected(_ itemSelected: SearchResultsView<T>.Select) -> Self {
         var copy = self
         copy.itemSelected = itemSelected
         return copy
