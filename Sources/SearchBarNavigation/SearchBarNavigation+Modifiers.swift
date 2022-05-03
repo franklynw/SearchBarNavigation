@@ -141,4 +141,13 @@ extension SearchBarNavigation {
         copy.becomeFirstResponder = becomeFirstResponder
         return copy
     }
+    
+    /// Set the navigation
+    /// - Parameters:
+    ///   - navigate: a Publisher which emits a viewModel used to create the destination view
+    ///   - destination: closure for building the view from the supplied viewModel
+    public func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+        pushController.navigate(navigate, destination: destination)
+        return self
+    }
 }

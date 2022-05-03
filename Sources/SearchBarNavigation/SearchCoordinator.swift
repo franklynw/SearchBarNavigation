@@ -53,6 +53,15 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         
         super.init()
         
+        parent.pushController.pushedViewControllerPublisher
+            .sink { [weak self] viewController in
+                guard let self = self, let viewController = viewController else {
+                    return
+                }
+                self.rootViewController.navigationController?.pushViewController(viewController, animated: true)
+            }
+            .store(in: &subscriptions)
+        
         parent.becomeFirstResponder?
             .sink {
                 if $0 {

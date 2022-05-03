@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import FWCommonProtocols
 import ButtonConfig
 import FWMenu
@@ -34,6 +35,8 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var disablesResultsChangedAnimations = false
     internal var becomeFirstResponder: Published<Bool>.Publisher?
     
+    @State internal var pushController = PushController()
+    
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
         self.viewModel = viewModel
@@ -59,5 +62,31 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     
     public func makeCoordinator() -> SearchCoordinator<T, Content> {
         SearchCoordinator(self)
+    }
+}
+
+
+internal final class PushController {
+    
+    private var cancellable: AnyCancellable?
+    
+    private let subject = PassthroughSubject<UIViewController?, Never>()
+    lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
+    
+    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
+        
+        guard cancellable == nil else {
+            return
+        }
+        
+        cancellable = navigate
+            .sink { [weak self] viewModel in
+                guard let viewModel = viewModel else {
+                    self?.subject.send(nil)
+                    return
+                }
+                let viewController = UIHostingController(rootView: destination(viewModel))
+                self?.subject.send(viewController)
+            }
     }
 }
