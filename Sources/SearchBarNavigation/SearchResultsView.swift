@@ -85,6 +85,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
         
         if section.results.isEmpty {
             emptyResults(for: section)
+                .frame(maxWidth: .infinity, alignment: .center)
         } else {
             ForEach(section.results.prefix(section.maxShown), id: \.self) { item in
                 T.SearchListItemType(parentViewModel: viewModel, content: item, textColor: section.viewConfig?.textColor ?? searchResultsTextColor ?? Color(.label), backgroundColor: section.viewConfig?.backgroundColor)
