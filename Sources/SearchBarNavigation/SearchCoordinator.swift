@@ -23,6 +23,10 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     
     init(_ parent: SearchBarNavigation<T, Content>) {
         
+        if let cancelButtonTitle = parent.cancelButtonTitle {
+            UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = cancelButtonTitle
+        }
+        
         self.parent = parent
         
         var searchController: UISearchController!

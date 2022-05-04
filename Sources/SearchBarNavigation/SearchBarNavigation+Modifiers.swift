@@ -97,6 +97,14 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// The text to use for the Cancel button - defaults to "Cancel" if unused
+    /// - Parameter cancelButtonTitle: a String
+    public func cancelButtonTitle(_ cancelButtonTitle: String) -> Self {
+        var copy = self
+        copy.cancelButtonTitle = cancelButtonTitle
+        return copy
+    }
+    
     /// The colour to use for the Cancel button - defaults to Color(.link) if unused
     /// - Parameter cancelButtonColor: a Color
     public func cancelButtonColor(_ cancelButtonColor: Color) -> Self {
