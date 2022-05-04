@@ -35,12 +35,13 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var disablesResultsChangedAnimations = false
     internal var becomeFirstResponder: Published<Bool>.Publisher?
     
-    @State internal var pushController = PushController()
+    @State internal var pushController = PushController<T, Content>()
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
         self.viewModel = viewModel
         self.content = content
+        pushController.parent = self
     }
 
     public func makeUIViewController(context: Context) -> UINavigationController {
@@ -66,14 +67,16 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
 }
 
 
-internal final class PushController {
+internal final class PushController<T: SearchBarShowing & NavigationStyleProviding, Content: View> {
     
     private var cancellable: AnyCancellable?
     
     private let subject = PassthroughSubject<UIViewController?, Never>()
     lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
     
-    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
+    var parent: SearchBarNavigation<T, Content>?
+    
+    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig?, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
         
         guard cancellable == nil else {
             return
@@ -81,12 +84,12 @@ internal final class PushController {
         
         cancellable = navigate
             .sink { [weak self] viewModel in
-                guard let viewModel = viewModel else {
+                guard let self = self, let viewModel = viewModel else {
                     self?.subject.send(nil)
                     return
                 }
-                let viewController = UIHostingController(rootView: destination(viewModel))
-                self?.subject.send(viewController)
+                let viewController = SwiftUIViewController(config: config, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
+                self.subject.send(viewController)
             }
     }
 }
