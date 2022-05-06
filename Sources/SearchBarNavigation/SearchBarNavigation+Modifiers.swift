@@ -142,6 +142,13 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// Use this so that the 'Return' key is always enabled, even when there's no text entered
+    public var disableAutomaticReturnKey: Self {
+        var copy = self
+        copy.enableReturnKeyAutomatically = false
+        return copy
+    }
+    
     /// Programmatically bring up the search results, with the search textField active
     /// - Parameter becomeFirstResponder: a published Bool value
     public func becomeFirstResponder(_ becomeFirstResponder: Published<Bool>.Publisher) -> Self {

@@ -77,6 +77,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.autocorrectionType = .no
         searchController.obscuresBackgroundDuringPresentation = true
+        searchController.searchBar.enablesReturnKeyAutomatically = parent.enableReturnKeyAutomatically
         
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
