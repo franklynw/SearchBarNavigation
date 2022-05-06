@@ -70,7 +70,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
 
 internal final class PushController<T: SearchBarShowing & NavigationStyleProviding, Content: View> {
     
-    private var cancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     
     private let subject = PassthroughSubject<UIViewController?, Never>()
     lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
@@ -79,11 +79,7 @@ internal final class PushController<T: SearchBarShowing & NavigationStyleProvidi
     
     func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig?, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
         
-        guard cancellable == nil else {
-            return
-        }
-        
-        cancellable = navigate
+        navigate
             .sink { [weak self] viewModel in
                 guard let self = self, let viewModel = viewModel else {
                     self?.subject.send(nil)
@@ -92,5 +88,6 @@ internal final class PushController<T: SearchBarShowing & NavigationStyleProvidi
                 let viewController = SwiftUIViewController(config: config, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
                 self.subject.send(viewController)
             }
+            .store(in: &cancellables)
     }
 }
