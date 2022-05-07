@@ -62,8 +62,11 @@ public struct SearchResults<Content: Hashable>: Collection {
         sections.first { $0.id == identifier }
     }
     
-    public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content]) {
+    public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content], title: String? = nil) {
         self[identifier]?.results = content
+        if let title = title {
+            self[identifier]?.updateTitle(title)
+        }
         self[identifier]?.hasReceivedContent = true
     }
     
@@ -155,12 +158,12 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     var results: [Content]
     var hasReceivedContent = false // not the same as empty content
     
-    let header: Header
+    var header: Header
     let maxShown: Int
     let viewConfig: ViewConfig?
     
     public struct Header {
-        let title: String
+        var title: String
         let color: Color?
         let textColor: Color?
         let button: Button?
@@ -229,6 +232,10 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     public mutating func clear() {
         results.removeAll()
         hasReceivedContent = false
+    }
+    
+    public mutating func updateTitle(_ title: String) {
+        header.title = title
     }
 }
 
