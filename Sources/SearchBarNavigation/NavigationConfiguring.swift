@@ -53,8 +53,8 @@ extension NavigationConfiguring {
         
             setBackgroundImage(image, for: navigationController.navigationBar)
             
-        case .none:
-            break
+        case .none, .useParent:
+            return
         }
         
         if hasTranslucentBackground {
@@ -148,7 +148,7 @@ extension NavigationConfiguring {
             switch style {
             case .colored(let textColor, _), .withImage(let textColor, _), .withColorAndImage(let textColor, _, _):
                 return textColor
-            case .none:
+            case .none, .useParent:
                 return nil
             }
         }()

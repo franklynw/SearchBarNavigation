@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -31,14 +32,14 @@
                     </constraints>
                 </stackView>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="z4v-I7-pvz">
-                    <rect key="frame" x="303.5" y="7" width="30" height="30"/>
+                    <rect key="frame" x="298" y="7" width="30" height="30"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="30" placeholder="YES" id="Dgz-jv-d7h"/>
                         <constraint firstAttribute="height" constant="30" placeholder="YES" id="ewk-w9-nNS"/>
                     </constraints>
                 </stackView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9FG-fU-GVU">
-                    <rect key="frame" x="345.5" y="9" width="31.5" height="26"/>
+                    <rect key="frame" x="340.5" y="7" width="37" height="30"/>
                     <color key="tintColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <state key="normal" image="keyboard.chevron.compact.down" catalog="system">
                         <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -59,13 +60,13 @@
                 <constraint firstItem="kIF-dz-30q" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="Mwd-pG-Qgv"/>
                 <constraint firstItem="9FG-fU-GVU" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="OKf-1X-LaW"/>
                 <constraint firstItem="hkh-Nb-xuC" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="PF8-iO-b4B"/>
-                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="9FG-fU-GVU" secondAttribute="bottom" constant="9" id="Rew-3c-doc"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="9FG-fU-GVU" secondAttribute="bottom" constant="7" id="Rew-3c-doc"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Ip8-ze-M5r" secondAttribute="bottom" constant="6" id="a8C-pQ-sWI"/>
                 <constraint firstItem="Ip8-ze-M5r" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="gJQ-ig-yXB"/>
                 <constraint firstItem="kIF-dz-30q" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="meH-fD-cWz"/>
                 <constraint firstItem="z4v-I7-pvz" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="nen-g3-Kul"/>
                 <constraint firstItem="Ip8-ze-M5r" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="12" id="qlV-Hl-gFC"/>
-                <constraint firstItem="9FG-fU-GVU" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="9" id="sAf-Fa-0t1"/>
+                <constraint firstItem="9FG-fU-GVU" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="7" id="sAf-Fa-0t1"/>
                 <constraint firstItem="z4v-I7-pvz" firstAttribute="top" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="top" constant="6" id="u9j-QV-iPx"/>
                 <constraint firstItem="9FG-fU-GVU" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kIF-dz-30q" secondAttribute="trailing" constant="12" id="yvV-ZQ-7RS"/>
                 <constraint firstAttribute="trailing" secondItem="9FG-fU-GVU" secondAttribute="trailing" constant="12" id="ziE-DY-dmX"/>

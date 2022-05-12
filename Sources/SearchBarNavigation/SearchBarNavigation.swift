@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 import FWCommonProtocols
 import ButtonConfig
 import FWMenu
@@ -27,17 +28,22 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var searchResultsHeadersColor: Color?
     internal var searchResultsTextColor: Color?
     internal var searchViewBackgroundColor: Color?
+    internal var cancelButtonTitle: String?
     internal var cancelButtonColor: Color?
-    internal var itemSelected: ((String) -> ())?
+    internal var itemSelected: SearchResultsView<T>.Select?
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
     internal var disablesResultsChangedAnimations = false
+    internal var enableReturnKeyAutomatically = true
     internal var becomeFirstResponder: Published<Bool>.Publisher?
+    
+    @State internal var pushController = PushController<T, Content>()
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
         self.viewModel = viewModel
         self.content = content
+        pushController.parent = self
     }
 
     public func makeUIViewController(context: Context) -> UINavigationController {
@@ -59,5 +65,30 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     
     public func makeCoordinator() -> SearchCoordinator<T, Content> {
         SearchCoordinator(self)
+    }
+}
+
+
+internal final class PushController<T: SearchBarShowing & NavigationStyleProviding, Content: View> {
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    private let subject = PassthroughSubject<UIViewController?, Never>()
+    lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
+    
+    var parent: SearchBarNavigation<T, Content>?
+    
+    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig?, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
+        
+        navigate
+            .sink { [weak self] viewModel in
+                guard let self = self, let viewModel = viewModel else {
+                    self?.subject.send(nil)
+                    return
+                }
+                let viewController = SwiftUIViewController(config: config, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
+                self.subject.send(viewController)
+            }
+            .store(in: &cancellables)
     }
 }

@@ -97,6 +97,14 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// The text to use for the Cancel button - defaults to "Cancel" if unused
+    /// - Parameter cancelButtonTitle: a String
+    public func cancelButtonTitle(_ cancelButtonTitle: String) -> Self {
+        var copy = self
+        copy.cancelButtonTitle = cancelButtonTitle
+        return copy
+    }
+    
     /// The colour to use for the Cancel button - defaults to Color(.link) if unused
     /// - Parameter cancelButtonColor: a Color
     public func cancelButtonColor(_ cancelButtonColor: Color) -> Self {
@@ -107,7 +115,7 @@ extension SearchBarNavigation {
     
     /// Closure which can be invoked by a search item
     /// - Parameter itemSelected: the closure which will be invoked
-    public func itemSelected(_ itemSelected: @escaping (String) -> ()) -> Self {
+    public func itemSelected(_ itemSelected: SearchResultsView<T>.Select) -> Self {
         var copy = self
         copy.itemSelected = itemSelected
         return copy
@@ -134,11 +142,27 @@ extension SearchBarNavigation {
         return copy
     }
     
+    /// Use this so that the 'Return' key is always enabled, even when there's no text entered
+    public var disableAutomaticReturnKey: Self {
+        var copy = self
+        copy.enableReturnKeyAutomatically = false
+        return copy
+    }
+    
     /// Programmatically bring up the search results, with the search textField active
     /// - Parameter becomeFirstResponder: a published Bool value
     public func becomeFirstResponder(_ becomeFirstResponder: Published<Bool>.Publisher) -> Self {
         var copy = self
         copy.becomeFirstResponder = becomeFirstResponder
         return copy
+    }
+    
+    /// Set the navigation
+    /// - Parameters:
+    ///   - navigate: a Publisher which emits a viewModel used to create the destination view
+    ///   - destination: closure for building the view from the supplied viewModel
+    public func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+        pushController.navigate(navigate, config: config, destination: destination)
+        return self
     }
 }

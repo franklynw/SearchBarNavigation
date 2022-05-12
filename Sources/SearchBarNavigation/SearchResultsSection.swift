@@ -32,6 +32,7 @@ public struct SearchResults<Content: Hashable>: Collection {
         }
         set {
             sections[position] = newValue
+            sections[position].hasReceivedContent = true
         }
     }
     
@@ -44,6 +45,7 @@ public struct SearchResults<Content: Hashable>: Collection {
                 return
             }
             sections[position] = newValue
+            sections[position].hasReceivedContent = true
         }
     }
     
@@ -60,20 +62,27 @@ public struct SearchResults<Content: Hashable>: Collection {
         sections.first { $0.id == identifier }
     }
     
-    public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content]) {
+    public mutating func updateSection(withIdentifier identifier: String, withNewContent content: [Content], title: String? = nil) {
         self[identifier]?.results = content
+        if let title = title {
+            self[identifier]?.updateTitle(title)
+        }
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func appendSection(withIdentifier identifier: String, withAdditionalContent content: [Content]) {
         self[identifier]?.results.append(contentsOf: content)
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func update(section: SearchResultsSection<Content>) {
         self[section.id] = section
+        self[section.id]?.hasReceivedContent = true
     }
     
     public mutating func updateSection(withIdentifier identifier: String, atIndex index: Int, withNewContent content: Content) {
         self[identifier]?[index] = content
+        self[identifier]?.hasReceivedContent = true
     }
     
     public mutating func clearSections(withIdentifiers identifiers: [String]? = nil) {
@@ -92,6 +101,12 @@ public struct SearchResults<Content: Hashable>: Collection {
     
     private func index(ofSection section: SearchResultsSection<Content>) -> Int? {
         sections.firstIndex(where: { $0.id == section.id })
+    }
+    
+    internal mutating func resetChangedFlags() {
+        for index in 0..<count {
+            sections[index].hasReceivedContent = false
+        }
     }
 }
 
@@ -143,12 +158,12 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     var results: [Content]
     var hasReceivedContent = false // not the same as empty content
     
-    let header: Header
+    var header: Header
     let maxShown: Int
     let viewConfig: ViewConfig?
     
     public struct Header {
-        let title: String
+        var title: String
         let color: Color?
         let textColor: Color?
         let button: Button?
@@ -217,6 +232,10 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     public mutating func clear() {
         results.removeAll()
         hasReceivedContent = false
+    }
+    
+    public mutating func updateTitle(_ title: String) {
+        header.title = title
     }
 }
 

@@ -24,14 +24,14 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// The search scope selected by the user
     var searchScope: Int { get set }
     
+    /// When the user has tapped in the search field
+    var isSearchActive: Bool { get set }
+    
     /// Should be set to true when the search is being carried out
     var isSearching: Bool { get }
     
     /// The results obtained by the viewModel - should be @Published
-    var searchResults: SearchResults<SearchListItemType.Content> { get }
-    
-    /// Called when the user selects from the list of results - optional
-    func searchItemWasSelected(_ item: SearchListItemType.Content)
+    var searchResults: SearchResults<SearchListItemType.Content> { get set }
     
     /// Called when the user presses the Search button on the keyboard - optional
     func search(using searchTerm: String)
@@ -51,12 +51,13 @@ public extension SearchBarShowing {
         get { 0 }
     }
     
-    var isSearching: Bool {
-        return false
+    var isSearchActive: Bool {
+        set {}
+        get { false }
     }
     
-    func searchItemWasSelected(_ item: SearchListItemType.Content) {
-        // nothing
+    var isSearching: Bool {
+        return false
     }
     
     func search(using searchTerm: String) {
@@ -81,8 +82,7 @@ public protocol SearchResultsListItem: View {
     ///   - content: the content of the item
     ///   - textColor: an optional Color for the item
     ///   - backgroundColor: an optional background Color for the item
-    ///   - select: an optional closure which the item can invoke if necessary
-    init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?, select: ((String) -> ())?)
+    init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?)
 }
 
 
@@ -91,9 +91,7 @@ extension Text: SearchResultsListItem {
     public typealias Parent = EmptyParentViewModel
     public typealias Content = String
     
-    public init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?, select: ((String) -> ())?) {
+    public init(parentViewModel: Parent, content: Content, textColor: Color?, backgroundColor: Color?) {
         self = Text(content)
     }
 }
-
-

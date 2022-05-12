@@ -23,6 +23,10 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     
     init(_ parent: SearchBarNavigation<T, Content>) {
         
+        if let cancelButtonTitle = parent.cancelButtonTitle {
+            UIBarButtonItem.appearance(whenContainedInInstancesOf: [UISearchBar.self]).title = cancelButtonTitle
+        }
+        
         self.parent = parent
         
         var searchController: UISearchController!
@@ -53,6 +57,15 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         
         super.init()
         
+        parent.pushController.pushedViewControllerPublisher
+            .sink { [weak self] viewController in
+                guard let self = self, let viewController = viewController else {
+                    return
+                }
+                self.rootViewController.navigationController?.pushViewController(viewController, animated: true)
+            }
+            .store(in: &subscriptions)
+        
         parent.becomeFirstResponder?
             .sink {
                 if $0 {
@@ -64,6 +77,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchController.searchBar.autocapitalizationType = .none
         searchController.searchBar.autocorrectionType = .no
         searchController.obscuresBackgroundDuringPresentation = true
+        searchController.searchBar.enablesReturnKeyAutomatically = parent.enableReturnKeyAutomatically
         
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
@@ -96,10 +110,13 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        parent.viewModel.isSearchActive = false
         searchWasCancelled()
     }
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        parent.viewModel.isSearchActive = true
         
         var button : UIButton?
         
@@ -193,6 +210,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     private func searchWasCancelled() {
         parent.viewModel.searchTerm.wrappedValue = ""
         parent.viewModel.searchCancelled()
+        parent.viewModel.searchResults.resetChangedFlags()
     }
 }
 
