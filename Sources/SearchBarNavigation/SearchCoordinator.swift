@@ -110,10 +110,13 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        parent.viewModel.isSearchActive = false
         searchWasCancelled()
     }
     
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        parent.viewModel.isSearchActive = true
         
         var button : UIButton?
         

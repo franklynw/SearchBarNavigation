@@ -24,6 +24,9 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// The search scope selected by the user
     var searchScope: Int { get set }
     
+    /// When the user has tapped in the search field
+    var isSearchActive: Bool { get set }
+    
     /// Should be set to true when the search is being carried out
     var isSearching: Bool { get }
     
@@ -46,6 +49,11 @@ public extension SearchBarShowing {
     var searchScope: Int {
         set {}
         get { 0 }
+    }
+    
+    var isSearchActive: Bool {
+        set {}
+        get { false }
     }
     
     var isSearching: Bool {
