@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ButtonConfig
 
 
 public struct SearchResults<Content: Hashable>: Collection {
@@ -166,19 +167,19 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
         var title: String
         let color: Color?
         let textColor: Color?
-        let button: Button?
+        let button: HeaderButton?
         
-        public struct Button {
-            let title: String
-            let action: () -> ()
+        public struct HeaderButton {
+            let config: (() -> ImageButtonConfig?)?
+            let color: Color?
             
-            public init(title: String, action: @escaping () -> ()) {
-                self.title = title
-                self.action = action
+            public init(config: (() -> ImageButtonConfig?)?, color: Color?) {
+                self.config = config
+                self.color = color
             }
         }
         
-        public init(title: String, color: Color? = nil, textColor: Color? = nil, button: Button? = nil) {
+        public init(title: String, color: Color? = nil, textColor: Color? = nil, button: HeaderButton? = nil) {
             self.title = title
             self.color = color
             self.textColor = textColor
