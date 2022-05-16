@@ -37,7 +37,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
     
     private var edgeInset: CGFloat {
         if #available(iOS 15, *) {
-            return -16
+            return -20
         } else {
             return 0
         }
@@ -147,13 +147,9 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     
                     Spacer()
                     
-                    if let button = header.button {
-                        Button(action: button.action) {
-                            Text(button.title)
-                                .font(Font.caption.weight(.semibold))
-                                .foregroundColor(header.textColor)
-                                .padding(.trailing, 16)
-                        }
+                    if let buttonConfig = header.button?.config?() {
+                        buttonConfig.button(color: header.button?.color)
+                            .padding(.trailing, 16)
                     }
                 }
             }

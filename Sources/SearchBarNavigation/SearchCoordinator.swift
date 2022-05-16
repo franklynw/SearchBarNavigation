@@ -60,6 +60,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         parent.pushController.pushedViewControllerPublisher
             .sink { [weak self] viewController in
                 guard let self = self, let viewController = viewController else {
+                    self?.rootViewController.navigationController?.popViewController(animated: true)
                     return
                 }
                 self.rootViewController.navigationController?.pushViewController(viewController, animated: true)
@@ -123,7 +124,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         switch parent.searchFieldButton {
         case .button(let buttonConfig):
             
-            button = buttonConfig.button
+            button = buttonConfig.uiButton
             
         case .menu(let barMenuButton):
             

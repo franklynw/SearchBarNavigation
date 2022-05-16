@@ -43,7 +43,7 @@ class SearchInputAccessoryView: UIView {
             
             func addButtons(_ buttons: [ImageButtonConfig], to stackView: UIStackView) {
                 buttons.forEach { buttonConfig in
-                    let button = buttonConfig.button
+                    let button = buttonConfig.uiButton
                     button.tintColor = buttonColor
                     stackView.addArrangedSubview(button)
                 }
@@ -62,7 +62,7 @@ class SearchInputAccessoryView: UIView {
             
         case .textWithButton(let textPublisher, let buttonConfig, let keyboardDismissButtonConfig, let backgroundColor):
             
-            let button = buttonConfig.button
+            let button = buttonConfig.uiButton
             button.tintColor = buttonColor
             view.trailingButtonsStackView.addArrangedSubview(button)
             configureKeyboardDismissButton(keyboardDismissButtonConfig)
