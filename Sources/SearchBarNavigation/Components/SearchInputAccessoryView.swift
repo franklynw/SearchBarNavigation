@@ -38,6 +38,11 @@ class SearchInputAccessoryView: UIView {
             }
         }
         
+        func fixButtonSize(_ button: UIButton) {
+            button.translatesAutoresizingMaskIntoConstraints = false
+            button.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        }
+        
         switch inputAccessory {
         case .buttons(let leadingButtons, let trailingButtons, let keyboardDismissButtonConfig, let backgroundColor):
             
@@ -45,6 +50,7 @@ class SearchInputAccessoryView: UIView {
                 buttons.forEach { buttonConfig in
                     let button = buttonConfig.uiButton
                     button.tintColor = buttonColor
+                    fixButtonSize(button)
                     stackView.addArrangedSubview(button)
                 }
             }
@@ -63,6 +69,9 @@ class SearchInputAccessoryView: UIView {
         case .textWithButton(let textPublisher, let buttonConfig, let keyboardDismissButtonConfig, let backgroundColor):
             
             let button = buttonConfig.uiButton
+            
+            fixButtonSize(button)
+            
             button.tintColor = buttonColor
             view.trailingButtonsStackView.addArrangedSubview(button)
             configureKeyboardDismissButton(keyboardDismissButtonConfig)
@@ -76,6 +85,9 @@ class SearchInputAccessoryView: UIView {
                     view.titleLabel.font = .systemFont(ofSize: fontSize)
                 }
         }
+        
+        view.keyboardDismissButton.translatesAutoresizingMaskIntoConstraints = false
+        view.keyboardDismissButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         
         return view
     }

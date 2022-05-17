@@ -152,6 +152,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                             .padding(.trailing, 16)
                     }
                 }
+                .padding([.top, .bottom], 5)
             }
         }
     }
