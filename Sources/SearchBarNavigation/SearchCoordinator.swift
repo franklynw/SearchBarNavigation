@@ -83,6 +83,10 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
         
+        if parent.viewModel.search == nil {
+            searchController.searchBar.returnKeyType = .done
+        }
+        
         setupInputAccessoryView()
         setupBarButtons()
         
@@ -96,7 +100,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        parent.viewModel.searchTerm.wrappedValue = searchText
+        parent.viewModel.searchTerm = searchText
     }
     
     public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -107,7 +111,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         guard let text = searchBar.text else {
             return
         }
-        parent.viewModel.search(using: text)
+        parent.viewModel.search?(text)
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -209,7 +213,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     private func searchWasCancelled() {
-        parent.viewModel.searchTerm.wrappedValue = ""
+        parent.viewModel.searchTerm = ""
         parent.viewModel.searchCancelled()
         parent.viewModel.searchResults.resetChangedFlags()
     }

@@ -127,7 +127,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
             
             UIApplication.shared.endEditing()
             
-            viewModel.searchTerm.wrappedValue = ""
+            viewModel.searchTerm = ""
             select(item)
             
             finished?()

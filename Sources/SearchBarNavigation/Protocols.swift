@@ -18,8 +18,11 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// The type of the items used to populate the search results list
     associatedtype SearchListItemType: SearchResultsListItem where SearchListItemType.Parent == Self
     
-    /// A bound String for the viewModel to use to search - optional - if set, the viewModel will receive every every keystroke
-    var searchTerm: Binding<String> { get }
+    /// Called when the user presses the Search button on the keyboard - optional
+    var search: ((String) -> ())? { get }
+    
+    /// The searchTerm as it appears in the searchBar textField
+    var searchTerm: String { get set }
     
     /// The search scope selected by the user
     var searchScope: Int { get set }
@@ -27,14 +30,11 @@ public protocol SearchBarShowing: NavigationStyleProviding {
     /// When the user has tapped in the search field
     var isSearchActive: Bool { get set }
     
-    /// Should be set to true when the search is being carried out
+    /// Should be set to true when the search is being carried out - causes the activity spinner to appear
     var isSearching: Bool { get }
     
     /// The results obtained by the viewModel - should be @Published
     var searchResults: SearchResults<SearchListItemType.Content> { get set }
-    
-    /// Called when the user presses the Search button on the keyboard - optional
-    func search(using searchTerm: String)
     
     /// Called when the cancel button is pressed - optional
     func searchCancelled()
@@ -42,8 +42,13 @@ public protocol SearchBarShowing: NavigationStyleProviding {
 
 public extension SearchBarShowing {
     
-    var searchTerm: Binding<String> {
-        Binding<String>(get: { "" }, set: { _ in })
+    var search: ((String) -> ())? {
+        get { nil }
+    }
+    
+    var searchTerm: String {
+        get { "" }
+        set {}
     }
     
     var searchScope: Int {
@@ -58,10 +63,6 @@ public extension SearchBarShowing {
     
     var isSearching: Bool {
         return false
-    }
-    
-    func search(using searchTerm: String) {
-        // nothing
     }
     
     func searchCancelled() {
