@@ -159,7 +159,7 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     var results: [Content]
     var hasReceivedContent = false // not the same as empty content
     
-    var header: Header
+    var header: Header?
     let maxShown: Int
     let viewConfig: ViewConfig?
     
@@ -212,7 +212,7 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
         self.viewConfig = viewConfig
     }
     
-    public init(id: String = UUID().uuidString, header: Header, results: [Content], maxShown: Int = .max, viewConfig: ViewConfig? = nil) {
+    public init(id: String = UUID().uuidString, header: Header?, results: [Content], maxShown: Int = .max, viewConfig: ViewConfig? = nil) {
         self.id = id
         self.header = header
         self.results = results
@@ -236,7 +236,7 @@ public struct SearchResultsSection<Content: Hashable>: Collection, Identifiable 
     }
     
     public mutating func updateTitle(_ title: String) {
-        header.title = title
+        header?.title = title
     }
 }
 

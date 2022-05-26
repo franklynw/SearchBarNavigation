@@ -86,7 +86,7 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Airport Info"
+        self.title = config?.navTitle
         self.navigationItem.backButtonTitle = ""
         self.loadInto(view: self.view)
     }
