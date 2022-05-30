@@ -220,6 +220,27 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
 }
 
 
+extension SearchCoordinator: ControlledPopDelegate {
+    
+    func navigationController(_ navigationController: UINavigationController, shouldPop viewController: UIViewController?, pop: (() -> ())?) -> Bool {
+        
+        if let parentShouldPop = parent.shouldPop {
+            
+            let confirm: (Bool) -> () = { shouldPop in
+                if shouldPop {
+                    pop?()
+                }
+            }
+            parentShouldPop(confirm)
+            
+            return false
+        }
+        
+        return true
+    }
+}
+
+
 private var hiddenKey: UInt8 = 0
 
 class SearchHostingController<Content: View>: UIHostingController<Content> {

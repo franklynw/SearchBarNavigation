@@ -165,4 +165,10 @@ extension SearchBarNavigation {
         pushController.navigate(navigate, config: config, destination: destination)
         return self
     }
+    
+    public func shouldPop(action: @escaping (@escaping (Bool) -> ()) -> ()) -> Self {
+        var copy = self
+        copy.shouldPop = action
+        return copy
+    }
 }

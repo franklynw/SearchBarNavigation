@@ -36,6 +36,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var disablesResultsChangedAnimations = false
     internal var enableReturnKeyAutomatically = true
     internal var becomeFirstResponder: Published<Bool>.Publisher?
+    internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
     
     @State internal var pushController = PushController<T, Content>()
     
@@ -46,19 +47,20 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
         pushController.parent = self
     }
 
-    public func makeUIViewController(context: Context) -> UINavigationController {
+    public func makeUIViewController(context: Context) -> ControlledPopNavigationController {
         
-        let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
+        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
         setupStyle(for: navigationController, viewModel: viewModel)
         
         context.coordinator.searchController.searchBar.delegate = context.coordinator
+        navigationController.popDelegate = context.coordinator
         
         return navigationController
     }
     
-    public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+    public func updateUIViewController(_ uiViewController: ControlledPopNavigationController, context: Context) {
         setupStyle(for: uiViewController, viewModel: viewModel)
         context.coordinator.update(content: content())
     }
