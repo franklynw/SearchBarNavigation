@@ -20,6 +20,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     
     private var subscriptions = Set<AnyCancellable>()
     
+    private var barButtons: (leadingButtons: [UIBarButtonItem], trailingButtons: [UIBarButtonItem])?
+    
     
     init(_ parent: SearchBarNavigation<T, Content>) {
         
@@ -187,7 +189,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         }
         
         let style = parent.style ?? parent.viewModel.navigationBarStyle
-        parent.setupBarButtons(barButtons, style: style, for: rootViewController)
+        self.barButtons = parent.setupBarButtons(barButtons, style: style, for: rootViewController)
     }
     
     private func setupInputAccessoryView() {
