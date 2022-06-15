@@ -212,7 +212,7 @@ fileprivate class CustomBackButton: UIBarButtonItem {
         let button = UIButton(frame: .zero)
 
         button.setTitle(title, for: UIControl.State())
-        button.setTitleColor(.black, for: UIControl.State())
+        button.setTitleColor(.label, for: UIControl.State())
         button.titleLabel?.font = .preferredFont(forTextStyle: .subheadline)
 
         let config = UIImage.SymbolConfiguration(textStyle: .subheadline, scale: .large)
