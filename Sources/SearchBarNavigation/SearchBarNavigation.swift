@@ -34,6 +34,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
     internal var disablesResultsChangedAnimations = false
+    internal var _disablePushResults = false
     internal var enableReturnKeyAutomatically = true
     internal var becomeFirstResponder: Published<Bool>.Publisher?
     internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?

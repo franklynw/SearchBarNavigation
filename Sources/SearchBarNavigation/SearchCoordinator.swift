@@ -35,19 +35,25 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         var searchResultsController: UIHostingController<SearchResultsView<T>>?
         var searchResultsView = SearchResultsView(parent.viewModel)
         
-        searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
-        searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
-        searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
-        searchResultsView.disablesResultsChangedAnimations = parent.disablesResultsChangedAnimations
-        searchResultsView.itemSelected = parent.itemSelected
-        
-        searchResultsView.finished = {
-            searchResultsController?.dismiss(animated: true, completion: nil)
-            searchController.searchBar.text = ""
+        if !parent._disablePushResults {
+            searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
+            searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
+            searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
+            searchResultsView.disablesResultsChangedAnimations = parent.disablesResultsChangedAnimations
+            searchResultsView.itemSelected = parent.itemSelected
+            
+            searchResultsView.finished = {
+                searchResultsController?.dismiss(animated: true, completion: nil)
+                searchController.searchBar.text = ""
+            }
+            
+            searchResultsController = SearchHostingController(rootView: searchResultsView, showPreviousResults: parent.showsLastResultsOnActivate)
+        } else {
+            searchResultsController = nil
         }
         
-        searchResultsController = SearchHostingController(rootView: searchResultsView, showPreviousResults: parent.showsLastResultsOnActivate)
         searchController = UISearchController(searchResultsController: searchResultsController)
+        searchController.obscuresBackgroundDuringPresentation = false
         
         if let cancelButtonColor = parent.cancelButtonColor {
             searchController.searchBar.tintColor = UIColor(cancelButtonColor)

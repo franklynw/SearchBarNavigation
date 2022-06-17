@@ -33,6 +33,12 @@ extension SearchBarNavigation {
         return copy
     }
     
+    public var disablePushResults: Self {
+        var copy = self
+        copy._disablePushResults = true
+        return copy
+    }
+    
     /// Sets the placeholder text in the search field
     /// - Parameter placeHolder: a String
     public func placeholder(_ placeholder: String) -> Self {
@@ -163,6 +169,13 @@ extension SearchBarNavigation {
     ///   - destination: closure for building the view from the supplied viewModel
     public func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
         pushController.navigate(navigate, config: config, destination: destination)
+        return self
+    }
+    
+    public func navigate<ViewModel, Destination: View>(on condition: Bool, navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+        if condition {
+            pushController.navigate(navigate, config: config, destination: destination)
+        }
         return self
     }
     
