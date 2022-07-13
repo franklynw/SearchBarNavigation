@@ -37,6 +37,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var _disablePushResults = false
     internal var enableReturnKeyAutomatically = true
     internal var becomeFirstResponder: Published<Bool>.Publisher?
+    internal var navBarTapped: (() -> ())?
     internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
     
     @State internal var pushController = PushController<Content>()
@@ -50,7 +51,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
 
     public func makeUIViewController(context: Context) -> ControlledPopNavigationController {
         
-        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController)
+        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController, navBarTapped: navBarTapped)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
         setupStyle(for: navigationController, viewModel: viewModel)

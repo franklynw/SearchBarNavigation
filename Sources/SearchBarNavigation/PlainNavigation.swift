@@ -21,6 +21,7 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     internal var hasTranslucentBackground = false
     internal var placeholder: String?
     internal var barButtons: BarButtons?
+    internal var navBarTapped: (() -> ())?
     internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
     
     @State internal var pushController = PushController<Content>()
@@ -33,7 +34,7 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
 
     public func makeUIViewController(context: Context) -> ControlledPopNavigationController {
         
-        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController)
+        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController, navBarTapped: navBarTapped)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
         setupStyle(for: navigationController, viewModel: viewModel)

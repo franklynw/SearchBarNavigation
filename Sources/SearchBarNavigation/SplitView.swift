@@ -105,6 +105,10 @@ public class SplitViewCoordinator<T: ObservableObject & SplitViewDetailsContaini
         let style = parent.style ?? parent.viewModel.navigationBarStyle
         self.barButtons = parent.setupBarButtons(barButtons, style: style, for: detailViewController)
     }
+    
+//    public func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
+//        return true
+//    }
 }
 
 

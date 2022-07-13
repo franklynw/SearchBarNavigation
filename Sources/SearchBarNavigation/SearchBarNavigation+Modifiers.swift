@@ -179,6 +179,12 @@ extension SearchBarNavigation {
         return self
     }
     
+    public func navBarTapped(_ navBarTapped: @escaping () -> ()) -> Self {
+        var copy = self
+        copy.navBarTapped = navBarTapped
+        return copy
+    }
+    
     public func shouldPop(action: @escaping (@escaping (Bool) -> ()) -> ()) -> Self {
         var copy = self
         copy.shouldPop = action
