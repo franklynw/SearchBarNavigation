@@ -49,6 +49,19 @@ extension PlainNavigation {
         return self
     }
     
+    public func navigate<ViewModel, Destination: View>(on condition: Bool, navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+        if condition {
+            pushController.navigate(navigate, config: config, destination: destination)
+        }
+        return self
+    }
+    
+    public func navBarTapped(_ navBarTapped: @escaping () -> ()) -> Self {
+        var copy = self
+        copy.navBarTapped = navBarTapped
+        return copy
+    }
+    
     public func shouldPop(action: @escaping (@escaping (Bool) -> ()) -> ()) -> Self {
         var copy = self
         copy.shouldPop = action

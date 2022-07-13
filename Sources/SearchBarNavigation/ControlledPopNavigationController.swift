@@ -17,13 +17,25 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
 
     weak var popDelegate: ControlledPopDelegate?
     
+    private let navBarTapped: (() -> ())?
+    
     
     required init?(coder aDecoder: NSCoder) {
+        navBarTapped = nil
         super.init(coder: aDecoder)
     }
     
-    public override init(rootViewController: UIViewController) {
+    public init(rootViewController: UIViewController, navBarTapped: (() -> ())? = nil) {
+        self.navBarTapped = navBarTapped
         super.init(rootViewController: rootViewController)
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        navigationBar.addGestureRecognizer(tapGestureRecognizer)
+        navigationBar.addGestureRecognizer(tapGestureRecognizer)
     }
     
     public override func popViewController(animated: Bool) -> UIViewController? {
@@ -70,5 +82,10 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
         }
         
         return true
+    }
+    
+    @objc
+    private func tapped() {
+        navBarTapped?()
     }
 }
