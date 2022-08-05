@@ -9,6 +9,11 @@ import SwiftUI
 import Combine
 
 
+public protocol PushedViewControllerTitleProviding {
+    var navbarTitle: String? { get }
+}
+
+
 internal final class PushController<Content: View> {
     
     private var cancellables = Set<AnyCancellable>()
@@ -26,10 +31,17 @@ internal final class PushController<Content: View> {
                     self?.subject.send(nil)
                     return
                 }
-                let viewController = SwiftUIViewController(config: config, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
+                
+                let title: String?
+                if let viewModel = viewModel as? PushedViewControllerTitleProviding {
+                    title = viewModel.navbarTitle
+                } else {
+                    title = nil
+                }
+                
+                let viewController = SwiftUIViewController(config: config, title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
                 self.subject.send(viewController)
             }
             .store(in: &cancellables)
     }
 }
-
