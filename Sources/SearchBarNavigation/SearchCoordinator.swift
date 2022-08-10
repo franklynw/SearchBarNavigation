@@ -20,6 +20,8 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     
     private var subscriptions = Set<AnyCancellable>()
     
+    private var barButtons: (leadingButtons: [UIBarButtonItem], trailingButtons: [UIBarButtonItem])?
+    
     
     init(_ parent: SearchBarNavigation<T, Content>) {
         
@@ -33,19 +35,25 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         var searchResultsController: UIHostingController<SearchResultsView<T>>?
         var searchResultsView = SearchResultsView(parent.viewModel)
         
-        searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
-        searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
-        searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
-        searchResultsView.disablesResultsChangedAnimations = parent.disablesResultsChangedAnimations
-        searchResultsView.itemSelected = parent.itemSelected
-        
-        searchResultsView.finished = {
-            searchResultsController?.dismiss(animated: true, completion: nil)
-            searchController.searchBar.text = ""
+        if !parent._disablePushResults {
+            searchResultsView.searchViewBackgroundColor = parent.searchViewBackgroundColor
+            searchResultsView.searchResultsTextColor = parent.searchResultsTextColor
+            searchResultsView.searchResultsHeadersColor = parent.searchResultsHeadersColor
+            searchResultsView.disablesResultsChangedAnimations = parent.disablesResultsChangedAnimations
+            searchResultsView.itemSelected = parent.itemSelected
+            
+            searchResultsView.finished = {
+                searchResultsController?.dismiss(animated: true, completion: nil)
+                searchController.searchBar.text = ""
+            }
+            
+            searchResultsController = SearchHostingController(rootView: searchResultsView, showPreviousResults: parent.showsLastResultsOnActivate)
+        } else {
+            searchResultsController = nil
         }
         
-        searchResultsController = SearchHostingController(rootView: searchResultsView, showPreviousResults: parent.showsLastResultsOnActivate)
         searchController = UISearchController(searchResultsController: searchResultsController)
+        searchController.obscuresBackgroundDuringPresentation = false
         
         if let cancelButtonColor = parent.cancelButtonColor {
             searchController.searchBar.tintColor = UIColor(cancelButtonColor)
@@ -83,6 +91,10 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         searchController.searchBar.placeholder = parent.placeholder
         searchController.searchBar.scopeButtonTitles = parent.searchScopeTitles
         
+        if parent.viewModel.search == nil {
+            searchController.searchBar.returnKeyType = .done
+        }
+        
         setupInputAccessoryView()
         setupBarButtons()
         
@@ -96,7 +108,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        parent.viewModel.searchTerm.wrappedValue = searchText
+        parent.viewModel.searchTerm = searchText
     }
     
     public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -107,7 +119,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         guard let text = searchBar.text else {
             return
         }
-        parent.viewModel.search(using: text)
+        parent.viewModel.search?(text)
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -183,7 +195,7 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
         }
         
         let style = parent.style ?? parent.viewModel.navigationBarStyle
-        parent.setupBarButtons(barButtons, style: style, for: rootViewController)
+        self.barButtons = parent.setupBarButtons(barButtons, style: style, for: rootViewController)
     }
     
     private func setupInputAccessoryView() {
@@ -209,9 +221,30 @@ public class SearchCoordinator<T: SearchBarShowing & NavigationStyleProviding, C
     }
     
     private func searchWasCancelled() {
-        parent.viewModel.searchTerm.wrappedValue = ""
+        parent.viewModel.searchTerm = ""
         parent.viewModel.searchCancelled()
         parent.viewModel.searchResults.resetChangedFlags()
+    }
+}
+
+
+extension SearchCoordinator: ControlledPopDelegate {
+    
+    func navigationController(_ navigationController: UINavigationController, shouldPop viewController: UIViewController?, pop: (() -> ())?) -> Bool {
+        
+        if let parentShouldPop = parent.shouldPop {
+            
+            let confirm: (Bool) -> () = { shouldPop in
+                if shouldPop {
+                    pop?()
+                }
+            }
+            parentShouldPop(confirm)
+            
+            return false
+        }
+        
+        return true
     }
 }
 

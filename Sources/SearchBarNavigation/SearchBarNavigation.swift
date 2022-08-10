@@ -34,10 +34,13 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var showsLastResultsOnActivate = false
     internal var cancelsSearchOnKeyboardDismiss = false
     internal var disablesResultsChangedAnimations = false
+    internal var _disablePushResults = false
     internal var enableReturnKeyAutomatically = true
     internal var becomeFirstResponder: Published<Bool>.Publisher?
+    internal var navBarTapped: (() -> ())?
+    internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
     
-    @State internal var pushController = PushController<T, Content>()
+    @State internal var pushController = PushController<Content>()
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
@@ -46,49 +49,25 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
         pushController.parent = self
     }
 
-    public func makeUIViewController(context: Context) -> UINavigationController {
+    public func makeUIViewController(context: Context) -> ControlledPopNavigationController {
         
-        let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
+        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController, navBarTapped: navBarTapped)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
         setupStyle(for: navigationController, viewModel: viewModel)
         
         context.coordinator.searchController.searchBar.delegate = context.coordinator
+        navigationController.popDelegate = context.coordinator
         
         return navigationController
     }
     
-    public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+    public func updateUIViewController(_ uiViewController: ControlledPopNavigationController, context: Context) {
         setupStyle(for: uiViewController, viewModel: viewModel)
         context.coordinator.update(content: content())
     }
     
     public func makeCoordinator() -> SearchCoordinator<T, Content> {
         SearchCoordinator(self)
-    }
-}
-
-
-internal final class PushController<T: SearchBarShowing & NavigationStyleProviding, Content: View> {
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    private let subject = PassthroughSubject<UIViewController?, Never>()
-    lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
-    
-    var parent: SearchBarNavigation<T, Content>?
-    
-    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig?, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
-        
-        navigate
-            .sink { [weak self] viewModel in
-                guard let self = self, let viewModel = viewModel else {
-                    self?.subject.send(nil)
-                    return
-                }
-                let viewController = SwiftUIViewController(config: config, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
-                self.subject.send(viewController)
-            }
-            .store(in: &cancellables)
     }
 }

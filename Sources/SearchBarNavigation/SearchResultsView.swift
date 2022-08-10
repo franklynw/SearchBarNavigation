@@ -62,11 +62,19 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                     ForEach(searchResults.sections) { section in
                         // show header if - we got results or (there's a resultsEmptyView and the empty results have returned)
                         if !section.results.isEmpty || (section.viewConfig?.resultsEmptyView?() != nil && section.hasReceivedContent) {
-                            Section(header: ListHeader(header: section.header.withFallbackColor(searchResultsHeadersColor))) {
-                                items(for: section)
+                            
+                            if let header = section.header {
+                                Section(header: ListHeader(header: header.withFallbackColor(searchResultsHeadersColor))) {
+                                    items(for: section)
+                                }
+                                .textCase(nil)
+                                .listRowInsets(EdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset))
+                            } else {
+                                Section {
+                                    items(for: section)
+                                }
+                                .listRowInsets(EdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset))
                             }
-                            .textCase(nil)
-                            .listRowInsets(EdgeInsets(top: 0, leading: edgeInset, bottom: 0, trailing: edgeInset))
                         }
                     }
                 }
@@ -119,7 +127,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
             
             UIApplication.shared.endEditing()
             
-            viewModel.searchTerm.wrappedValue = ""
+            viewModel.searchTerm = ""
             select(item)
             
             finished?()
@@ -152,6 +160,7 @@ public struct SearchResultsView<T: SearchBarShowing>: View, Identifiable {
                             .padding(.trailing, 16)
                     }
                 }
+                .padding([.top, .bottom], 5)
             }
         }
     }

@@ -107,7 +107,8 @@ extension NavigationConfiguring {
         }
     }
     
-    func setupBarButtons(_ barButtons: BarButtons, style: NavigationBarStyle?, for viewController: UIViewController) {
+    @discardableResult
+    func setupBarButtons(_ barButtons: BarButtons, style: NavigationBarStyle?, for viewController: UIViewController) -> (leadingButtons: [UIBarButtonItem], trailingButtons: [UIBarButtonItem]) {
         
         func makeMenuButton(_ buttonConfig: BarMenuButton, relativeX: CGFloat) -> UIBarButtonItem {
             
@@ -162,5 +163,7 @@ extension NavigationConfiguring {
         
         viewController.navigationItem.leftBarButtonItems = leadingButtons
         viewController.navigationItem.rightBarButtonItems = trailingButtons
+        
+        return (leadingButtons, trailingButtons)
     }
 }

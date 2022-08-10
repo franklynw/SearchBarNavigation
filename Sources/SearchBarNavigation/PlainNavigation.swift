@@ -5,13 +5,14 @@
 //
 
 import SwiftUI
+import Combine
 import FWCommonProtocols
 import ButtonConfig
 import FWMenu
 
 
 public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIViewControllerRepresentable, NavigationConfiguring {
-    
+        
     @ObservedObject internal var viewModel: T
     internal let content: () -> Content
     
@@ -20,6 +21,10 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     internal var hasTranslucentBackground = false
     internal var placeholder: String?
     internal var barButtons: BarButtons?
+    internal var navBarTapped: (() -> ())?
+    internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
+    
+    @State internal var pushController = PushController<Content>()
     
     
     public init(_ viewModel: T, @ViewBuilder content: @escaping () -> Content) {
@@ -27,17 +32,18 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
         self.content = content
     }
 
-    public func makeUIViewController(context: Context) -> UINavigationController {
+    public func makeUIViewController(context: Context) -> ControlledPopNavigationController {
         
-        let navigationController = UINavigationController(rootViewController: context.coordinator.rootViewController)
+        let navigationController = ControlledPopNavigationController(rootViewController: context.coordinator.rootViewController, navBarTapped: navBarTapped)
         navigationController.navigationBar.prefersLargeTitles = prefersLargeTitles
         
         setupStyle(for: navigationController, viewModel: viewModel)
+        navigationController.popDelegate = context.coordinator
         
         return navigationController
     }
     
-    public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {
+    public func updateUIViewController(_ uiViewController: ControlledPopNavigationController, context: Context) {
         setupStyle(for: uiViewController, viewModel: viewModel)
         context.coordinator.update(content: content())
     }
@@ -48,6 +54,8 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     
     
     public class FWCoordinator<T: NavigationStyleProviding, Content: View>: NSObject {
+        
+        private var subscriptions = Set<AnyCancellable>()
         
         let parent: PlainNavigation<T, Content>
         
@@ -62,6 +70,16 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
             rootViewController.view.backgroundColor = .clear
             
             super.init()
+            
+            parent.pushController.pushedViewControllerPublisher
+                .sink { [weak self] viewController in
+                    guard let self = self, let viewController = viewController else {
+                        self?.rootViewController.navigationController?.popViewController(animated: true)
+                        return
+                    }
+                    self.rootViewController.navigationController?.pushViewController(viewController, animated: true)
+                }
+                .store(in: &subscriptions)
             
             setupBarButtons()
         }
@@ -81,5 +99,26 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
             let style = parent.style ?? parent.viewModel.navigationBarStyle
             parent.setupBarButtons(barButtons, style: style, for: rootViewController)
         }
+    }
+}
+
+
+extension PlainNavigation.FWCoordinator: ControlledPopDelegate {
+    
+    func navigationController(_ navigationController: UINavigationController, shouldPop viewController: UIViewController?, pop: (() -> ())?) -> Bool {
+        
+        if let parentShouldPop = parent.shouldPop {
+            
+            let confirm: (Bool) -> () = { shouldPop in
+                if shouldPop {
+                    pop?()
+                }
+            }
+            parentShouldPop(confirm)
+            
+            return false
+        }
+        
+        return true
     }
 }

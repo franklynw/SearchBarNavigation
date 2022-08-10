@@ -21,6 +21,8 @@ public struct BarMenuButton: FWMenuPresenting {
     public let contentAccentColor: Color?
     public let font: Font?
     
+    public let hideMenuOnDeviceRotation = true
+    
     let imageSystemName: String?
     let imageName: String?
     
