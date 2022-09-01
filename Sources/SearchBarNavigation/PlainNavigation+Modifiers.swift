@@ -67,4 +67,17 @@ extension PlainNavigation {
         copy.shouldPop = action
         return copy
     }
+    
+    public func backgroundColor(_ backgroundColor: Color) -> Self {
+        var copy = self
+        copy.backgroundColor = backgroundColor
+        return copy
+    }
+    
+    public func backgroundView<Content: View>(_ backgroundView: () -> Content) -> Self {
+        var copy = self
+        let uiView = UIHostingController(rootView: backgroundView()).view
+        copy.backgroundView = uiView
+        return copy
+    }
 }
