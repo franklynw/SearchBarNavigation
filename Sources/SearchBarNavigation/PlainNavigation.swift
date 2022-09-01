@@ -19,6 +19,8 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     internal var style: NavigationBarStyle?
     internal var prefersLargeTitles = true
     internal var hasTranslucentBackground = false
+    internal var backgroundColor: Color = .clear
+    internal var backgroundView: UIView?
     internal var placeholder: String?
     internal var barButtons: BarButtons?
     internal var navBarTapped: (() -> ())?
@@ -67,7 +69,17 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
             self.parent = parent
             
             rootViewController = UIHostingController(rootView: parent.content())
-            rootViewController.view.backgroundColor = .clear
+            rootViewController.view.backgroundColor = UIColor(parent.backgroundColor)
+            
+            if let backgroundView = parent.backgroundView {
+                rootViewController.view.insertSubview(backgroundView, at: 0)
+                NSLayoutConstraint.activate([
+                    backgroundView.leadingAnchor.constraint(equalTo: rootViewController.view.leadingAnchor),
+                    backgroundView.trailingAnchor.constraint(equalTo: rootViewController.view.trailingAnchor),
+                    backgroundView.topAnchor.constraint(equalTo: rootViewController.view.topAnchor),
+                    backgroundView.bottomAnchor.constraint(equalTo: rootViewController.view.bottomAnchor)
+                ])
+            }
             
             super.init()
             
