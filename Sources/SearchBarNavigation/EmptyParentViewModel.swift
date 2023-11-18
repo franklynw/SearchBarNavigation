@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-public class EmptyParentViewModel: SearchBarShowing {
+public final class EmptyParentViewModel: SearchBarShowing {
     
     public typealias SearchListItemType = Text
     public typealias SearchListItemDetails = [String]

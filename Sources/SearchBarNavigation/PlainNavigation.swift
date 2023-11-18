@@ -133,4 +133,8 @@ extension PlainNavigation.FWCoordinator: ControlledPopDelegate {
         
         return true
     }
+    
+    var shouldPop: ((@escaping (Bool) -> ()) -> ())? {
+        parent.shouldPop
+    }
 }

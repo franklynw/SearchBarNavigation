@@ -9,6 +9,7 @@ import UIKit
 
 
 protocol ControlledPopDelegate: AnyObject {
+    var shouldPop: ((@escaping (Bool) -> ()) -> ())? { get }
     func navigationController(_ navigationController: UINavigationController, shouldPop viewController: UIViewController?, pop: (() -> ())?) -> Bool
 }
 
@@ -28,13 +29,12 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
     public init(rootViewController: UIViewController, navBarTapped: (() -> ())? = nil) {
         self.navBarTapped = navBarTapped
         super.init(rootViewController: rootViewController)
+        interactivePopGestureRecognizer?.delegate = self // this is the gesture recognizer which deals with the screen-edge swipes used for popping
     }
     
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        navigationBar.addGestureRecognizer(tapGestureRecognizer)
         navigationBar.addGestureRecognizer(tapGestureRecognizer)
     }
     
@@ -87,5 +87,28 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
     @objc
     private func tapped() {
         navBarTapped?()
+    }
+}
+
+
+extension ControlledPopNavigationController: UIGestureRecognizerDelegate {
+    
+    /*
+     We intercept the screen-edge swipe gesture & check that it's ok to pop
+     If it is, we call 'pop' ourselves so the user's swipe gesture works
+     */
+    
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard gestureRecognizer === interactivePopGestureRecognizer else {
+            return true
+        }
+        
+        popDelegate?.shouldPop? { pop in
+            if pop {
+                _ = self.popViewController(animated: true)
+            }
+        }
+        
+        return false
     }
 }
