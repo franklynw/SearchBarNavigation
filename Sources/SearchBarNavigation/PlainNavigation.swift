@@ -25,6 +25,7 @@ public struct PlainNavigation<T: NavigationStyleProviding, Content: View>: UIVie
     internal var barButtons: BarButtons?
     internal var navBarTapped: (() -> ())?
     internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
+    internal var hasChanges: () -> Bool = { false }
     
     @State internal var pushController = PushController<Content>()
     
@@ -136,5 +137,9 @@ extension PlainNavigation.FWCoordinator: ControlledPopDelegate {
     
     var shouldPop: ((@escaping (Bool) -> ()) -> ())? {
         parent.shouldPop
+    }
+    
+    var hasChanges: Bool {
+        parent.hasChanges()
     }
 }

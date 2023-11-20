@@ -39,6 +39,7 @@ public struct SearchBarNavigation<T: SearchBarShowing & NavigationStyleProviding
     internal var becomeFirstResponder: Published<Bool>.Publisher?
     internal var navBarTapped: (() -> ())?
     internal var shouldPop: ((@escaping (Bool) -> ()) -> ())?
+    internal var hasChanges: () -> Bool = { false }
     
     @State internal var pushController = PushController<Content>()
     

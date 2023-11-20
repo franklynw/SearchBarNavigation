@@ -250,6 +250,10 @@ extension SearchCoordinator: ControlledPopDelegate {
     var shouldPop: ((@escaping (Bool) -> ()) -> ())? {
         parent.shouldPop
     }
+    
+    var hasChanges: Bool {
+        parent.hasChanges()
+    }
 }
 
 

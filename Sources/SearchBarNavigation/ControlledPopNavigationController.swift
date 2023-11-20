@@ -10,15 +10,17 @@ import UIKit
 
 protocol ControlledPopDelegate: AnyObject {
     var shouldPop: ((@escaping (Bool) -> ()) -> ())? { get }
+    var hasChanges: Bool { get }
     func navigationController(_ navigationController: UINavigationController, shouldPop viewController: UIViewController?, pop: (() -> ())?) -> Bool
 }
 
 
 public class ControlledPopNavigationController: UINavigationController, UINavigationBarDelegate {
-
+    
     weak var popDelegate: ControlledPopDelegate?
     
     private let navBarTapped: (() -> ())?
+    private var hasSwiped = false
     
     
     required init?(coder aDecoder: NSCoder) {
@@ -30,6 +32,7 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
         self.navBarTapped = navBarTapped
         super.init(rootViewController: rootViewController)
         interactivePopGestureRecognizer?.delegate = self // this is the gesture recognizer which deals with the screen-edge swipes used for popping
+        interactivePopGestureRecognizer?.addTarget(self, action: #selector(swipeEnded))
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -39,7 +42,7 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
     }
     
     public override func popViewController(animated: Bool) -> UIViewController? {
-        guard let popDelegate = self.popDelegate else { return nil }
+        guard let popDelegate = self.popDelegate, !hasSwiped else { return nil }
         
         if popDelegate.navigationController(self, shouldPop: self.viewControllers.last, pop: {
             super.popViewController(animated: animated)
@@ -51,7 +54,7 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
     }
     
     public override func popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
-        guard let popDelegate = self.popDelegate else { return nil }
+        guard let popDelegate = self.popDelegate, !hasSwiped else { return nil }
         
         if popDelegate.navigationController(self, shouldPop: self.viewControllers.last, pop: {
             super.popToViewController(viewController, animated: animated)
@@ -63,7 +66,7 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
     }
     
     public override func popToRootViewController(animated: Bool) -> [UIViewController]? {
-        guard let popDelegate = self.popDelegate else { return nil }
+        guard let popDelegate = self.popDelegate, !hasSwiped else { return nil }
         
         if popDelegate.navigationController(self, shouldPop: self.viewControllers.last, pop: {
             super.popToRootViewController(animated: animated)
@@ -84,6 +87,10 @@ public class ControlledPopNavigationController: UINavigationController, UINaviga
         return true
     }
     
+    public func navigationBar(_ navigationBar: UINavigationBar, didPop item: UINavigationItem) {
+        hasSwiped = false
+    }
+    
     @objc
     private func tapped() {
         navBarTapped?()
@@ -102,13 +109,32 @@ extension ControlledPopNavigationController: UIGestureRecognizerDelegate {
         guard gestureRecognizer === interactivePopGestureRecognizer else {
             return true
         }
+        guard popDelegate?.hasChanges == true else {
+            return true
+        }
+        hasSwiped = true
         
-        popDelegate?.shouldPop? { pop in
+        popDelegate?.shouldPop? { [unowned self] pop in
+            self.hasSwiped = false
             if pop {
                 _ = self.popViewController(animated: true)
             }
         }
         
         return false
+    }
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        true
+    }
+    
+    @objc
+    private func swipeEnded(_ gestureRecognizer: UIScreenEdgePanGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .ended, .cancelled, .failed:
+            hasSwiped = false
+        default:
+            break
+        }
     }
 }

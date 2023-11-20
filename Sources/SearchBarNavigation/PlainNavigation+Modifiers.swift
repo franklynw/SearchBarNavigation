@@ -68,6 +68,12 @@ extension PlainNavigation {
         return copy
     }
     
+    public func hasChanges(_ hasChanges: @escaping () -> Bool) -> Self {
+        var copy = self
+        copy.hasChanges = hasChanges
+        return copy
+    }
+    
     public func backgroundColor(_ backgroundColor: Color) -> Self {
         var copy = self
         copy.backgroundColor = backgroundColor
