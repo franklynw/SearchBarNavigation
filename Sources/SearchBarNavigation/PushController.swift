@@ -13,8 +13,13 @@ public protocol PushedViewControllerTitleProviding {
     var navbarTitle: String? { get }
 }
 
+public protocol Navigating: AnyObject {
+    func navigate<ViewModel, Destination: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination)
+    func pop()
+}
 
-internal final class PushController<Content: View> {
+
+internal final class PushController<Content: View>: Navigating {
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -23,7 +28,7 @@ internal final class PushController<Content: View> {
     
     var parent: NavigationConfiguring?
     
-    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig?, @ViewBuilder destination: @escaping (ViewModel) -> Destination) {
+    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: @escaping (ViewModel) -> (NavigationConfig?), @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination) {
         
         navigate
             .sink { [weak self] viewModel in
@@ -39,9 +44,27 @@ internal final class PushController<Content: View> {
                     title = nil
                 }
                 
-                let viewController = SwiftUIViewController(config: config, title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel))
+                let viewController = SwiftUIViewController(config: config(viewModel), title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel, self))
+                
                 self.subject.send(viewController)
             }
             .store(in: &cancellables)
+    }
+    
+    func navigate<ViewModel, Content: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Content) {
+        
+        let title: String?
+        if let viewModel = viewModel as? PushedViewControllerTitleProviding {
+            title = viewModel.navbarTitle
+        } else {
+            title = nil
+        }
+        
+        let viewController = SwiftUIViewController(config: config, title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel, self))
+        self.subject.send(viewController)
+    }
+    
+    func pop() {
+        subject.send(nil)
     }
 }

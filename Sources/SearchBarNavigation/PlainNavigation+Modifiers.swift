@@ -44,12 +44,12 @@ extension PlainNavigation {
     /// - Parameters:
     ///   - navigate: a Publisher which emits a viewModel used to create the destination view
     ///   - destination: closure for building the view from the supplied viewModel
-    public func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+    public func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: @escaping (ViewModel) -> (NavigationConfig?), @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination) -> Self {
         pushController.navigate(navigate, config: config, destination: destination)
         return self
     }
     
-    public func navigate<ViewModel, Destination: View>(on condition: Bool, navigate: Published<ViewModel?>.Publisher, config: NavigationConfig? = nil, @ViewBuilder destination: @escaping (ViewModel) -> Destination) -> Self {
+    public func navigate<ViewModel, Destination: View>(on condition: Bool, navigate: Published<ViewModel?>.Publisher, config: @escaping (ViewModel) -> (NavigationConfig?), @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination) -> Self {
         if condition {
             pushController.navigate(navigate, config: config, destination: destination)
         }

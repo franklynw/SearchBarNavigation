@@ -60,7 +60,6 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     var hasTranslucentBackground: Bool = false
     
     private var config: NavigationConfig?
-    private var navBarTitle: String?
     private var content: Content!
     
     
@@ -75,7 +74,7 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     convenience init(config: NavigationConfig?, title: String? = nil, hasTranslucentNavBar: Bool, content: Content) {
         self.init(nibName: nil, bundle: nil)
         self.config = config
-        self.navBarTitle = title
+        self.title = title ?? config?.navTitle
         self.content = content
         hasTranslucentBackground = hasTranslucentNavBar
     }
@@ -88,8 +87,7 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = navBarTitle ?? config?.navTitle
-        self.navigationItem.backButtonTitle = ""
+        self.navigationItem.backButtonTitle = config?.backButtonTitle ?? ""
         self.loadInto(view: self.view)
     }
     
