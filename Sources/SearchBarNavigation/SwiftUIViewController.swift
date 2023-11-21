@@ -86,9 +86,7 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.navigationItem.backButtonTitle = config?.backButtonTitle ?? ""
-        self.loadInto(view: self.view)
+        loadInto(view: self.view)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -117,7 +115,13 @@ class SwiftUIViewController<Content: View>: UIViewController, NavigationStylePro
     }
     
     private func setNavBarLeftButton() {
-        navigationItem.leftBarButtonItem = CustomBackButton(target: self, title: config?.backButtonTitle, selector: #selector(self.leftDoneButtonTapped))
+        let title: String
+        if let backButtonTitle = config?.backButtonTitle {
+            title = backButtonTitle
+        } else {
+            title = NSLocalizedString("Back", bundle: .module, comment: "")
+        }
+        navigationItem.leftBarButtonItem = CustomBackButton(target: self, title: title, selector: #selector(self.leftDoneButtonTapped))
     }
     
     @objc

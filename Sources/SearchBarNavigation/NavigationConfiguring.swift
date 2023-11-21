@@ -161,8 +161,12 @@ extension NavigationConfiguring {
             }
         }
         
-        viewController.navigationItem.leftBarButtonItems = leadingButtons
-        viewController.navigationItem.rightBarButtonItems = trailingButtons
+        if !leadingButtons.isEmpty {
+            viewController.navigationItem.leftBarButtonItems = leadingButtons
+        }
+        if !trailingButtons.isEmpty {
+            viewController.navigationItem.rightBarButtonItems = trailingButtons
+        }
         
         return (leadingButtons, trailingButtons)
     }
