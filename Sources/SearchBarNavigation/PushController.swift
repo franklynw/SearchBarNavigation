@@ -14,8 +14,9 @@ public protocol PushedViewControllerTitleProviding {
 }
 
 public protocol Navigating: AnyObject {
-    func navigate<ViewModel, Destination: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination)
+    func navigate<ViewModel, Destination: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, Navigating) -> Destination)
     func pop()
+    func updateBarButtons(_ buttons: BarButtons)
 }
 
 
@@ -27,8 +28,9 @@ internal final class PushController<Content: View>: Navigating {
     lazy var pushedViewControllerPublisher = subject.eraseToAnyPublisher()
     
     var parent: NavigationConfiguring?
+    var currentTopViewController: UIViewController?
     
-    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: @escaping (ViewModel) -> (NavigationConfig?), @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Destination) {
+    func navigate<ViewModel, Destination: View>(_ navigate: Published<ViewModel?>.Publisher, config: @escaping (ViewModel) -> (NavigationConfig?), @ViewBuilder destination: @escaping (ViewModel, Navigating) -> Destination) {
         
         navigate
             .sink { [weak self] viewModel in
@@ -45,13 +47,14 @@ internal final class PushController<Content: View>: Navigating {
                 }
                 
                 let viewController = SwiftUIViewController(config: config(viewModel), title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel, self))
+                self.currentTopViewController = viewController
                 
                 self.subject.send(viewController)
             }
             .store(in: &cancellables)
     }
     
-    func navigate<ViewModel, Content: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, any Navigating) -> Content) {
+    func navigate<ViewModel, Content: View>(config: NavigationConfig?, viewModel: ViewModel, @ViewBuilder destination: @escaping (ViewModel, Navigating) -> Content) {
         
         let title: String?
         if let viewModel = viewModel as? PushedViewControllerTitleProviding {
@@ -61,10 +64,24 @@ internal final class PushController<Content: View>: Navigating {
         }
         
         let viewController = SwiftUIViewController(config: config, title: title, hasTranslucentNavBar: self.parent?.hasTranslucentBackground == true, content: destination(viewModel, self))
+        self.currentTopViewController = viewController
+        
         self.subject.send(viewController)
     }
     
     func pop() {
         subject.send(nil)
+    }
+    
+    func updateBarButtons(_ buttons: BarButtons) {
+        
+        guard let currentTopViewController = currentTopViewController else {
+            return
+        }
+        guard let navConfigurator = currentTopViewController as? NavigationConfiguring else {
+            return
+        }
+        
+        navConfigurator.setupBarButtons(buttons, style: .useParent, for: currentTopViewController)
     }
 }
